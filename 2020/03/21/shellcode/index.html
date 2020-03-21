@@ -817,32 +817,29 @@ r<span class="token punctuation">.</span>interactive<span class="token punctuati
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="far fa-dot-circle"></i>&nbsp;本篇
-            </div>
+                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/2020/03/21/shellcode/">
+                <a href="/2020/03/21/pwn-100/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/8.jpg" class="responsive-img" alt="堆指针越界&堆上布置shellcode|攻防世界pwn进阶区 note-service2">
+                        <img src="/medias/featureimages/6.jpg" class="responsive-img" alt="64位程序rop链构造|攻防世界pwn进阶区 pwn-100">
                         
-                        <span class="card-title">堆指针越界&堆上布置shellcode|攻防世界pwn进阶区 note-service2</span>
+                        <span class="card-title">64位程序rop链构造|攻防世界pwn进阶区 pwn-100</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            前言目前CTF竞赛中，以堆为背景的pwn题已逐步成为了pwn类型题目中的主流，开始逐步接触堆题，本题涉及到在堆上布置shellcode，并利用堆指针使程序执行流得到控制。
-思路分析0x00.检查保护机制
-Canary found：不能用溢出
+                            前言这一题和pwn-200有类似之处，都是栈溢出漏洞，可以循环泄露，所以都使用DynELF来泄露。但是pwn200是32位程序用rop，pwn100是64位程序用rop。区别在于32位程序利用栈布局，而64位程序调用参数是利用寄存器。且本题
                         
                     </div>
                     <div class="publish-info">
-                            <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2020-03-21
-                            </span>
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2020-03-21
+                        </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
@@ -855,12 +852,11 @@ Canary found：不能用溢出
                         </span>
                     </div>
                 </div>
-
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/heap/">
-                        <span class="chip bg-color">heap</span>
+                    <a href="/tags/rop/">
+                        <span class="chip bg-color">rop</span>
                     </a>
                     
                 </div>
@@ -1060,7 +1056,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">3.2k</span>&nbsp;字
+                class="white-color">4.9k</span>&nbsp;字
             
             
             
