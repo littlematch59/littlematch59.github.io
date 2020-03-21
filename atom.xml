@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://github.com/littlematch59/littlematch59.github.io/"/>
-  <updated>2020-03-21T03:04:42.039Z</updated>
+  <updated>2020-03-21T18:14:51.112Z</updated>
   <id>https://github.com/littlematch59/littlematch59.github.io/</id>
   
   <author>
@@ -15,6 +15,33 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>实用Chrome插件功能介绍系列&amp;&amp;安装指南</title>
+    <link href="https://github.com/littlematch59/littlematch59.github.io/2020/03/22/chrome/"/>
+    <id>https://github.com/littlematch59/littlematch59.github.io/2020/03/22/chrome/</id>
+    <published>2020-03-21T18:12:37.029Z</published>
+    <updated>2020-03-21T18:14:51.112Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;h2 id=&quot;0x00-Infinity-New-Tab&quot;&gt;&lt;a href=&quot;#0x00-Infinity-New-Tab&quot; class=&quot;headerlink&quot; title=&quot;0x00.Infinity New Tab&quot;&gt;&lt;/a&gt;0x00.Infinity New
+        
+      
+    
+    </summary>
+    
+    
+    
+      <category term="tips" scheme="https://github.com/littlematch59/littlematch59.github.io/tags/tips/"/>
+    
+      <category term="chrome" scheme="https://github.com/littlematch59/littlematch59.github.io/tags/chrome/"/>
+    
+  </entry>
   
   <entry>
     <title>64位程序rop链构造|攻防世界pwn进阶区 pwn-100</title>
