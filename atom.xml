@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://github.com/littlematch59/littlematch59.github.io/"/>
-  <updated>2020-03-21T18:14:51.112Z</updated>
+  <updated>2020-03-24T17:24:39.150Z</updated>
   <id>https://github.com/littlematch59/littlematch59.github.io/</id>
   
   <author>
@@ -15,6 +15,35 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>one_gadget用法|攻防世界pwn进阶区babystack</title>
+    <link href="https://github.com/littlematch59/littlematch59.github.io/2020/03/25/babystack/"/>
+    <id>https://github.com/littlematch59/littlematch59.github.io/2020/03/25/babystack/</id>
+    <published>2020-03-24T17:21:57.286Z</published>
+    <updated>2020-03-24T17:24:39.150Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;h2 id=&quot;0x00-检查保护&quot;&gt;&lt;a href=&quot;#0x00-检查保护&quot; class=&quot;headerlink&quot; title=&quot;0x00.检查保护&quot;&gt;&lt;/a&gt;0x00.检查保护&lt;/h2&gt;&lt;pre&gt;&lt;code&gt;devil@ubuntu:~/adworld/pwn$
+        
+      
+    
+    </summary>
+    
+    
+      <category term="pwn" scheme="https://github.com/littlematch59/littlematch59.github.io/categories/pwn/"/>
+    
+    
+      <category term="stack" scheme="https://github.com/littlematch59/littlematch59.github.io/tags/stack/"/>
+    
+      <category term="one_gadget" scheme="https://github.com/littlematch59/littlematch59.github.io/tags/one-gadget/"/>
+    
+  </entry>
   
   <entry>
     <title>实用Chrome插件功能介绍系列&amp;&amp;安装指南</title>
@@ -148,56 +177,6 @@
     
     
       <category term="-疑难杂症 -Google账号" scheme="https://github.com/littlematch59/littlematch59.github.io/tags/%E7%96%91%E9%9A%BE%E6%9D%82%E7%97%87-Google%E8%B4%A6%E5%8F%B7/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>article title</title>
-    <link href="https://github.com/littlematch59/littlematch59.github.io/2020/03/05/article-title/"/>
-    <id>https://github.com/littlematch59/littlematch59.github.io/2020/03/05/article-title/</id>
-    <published>2020-03-05T04:14:35.000Z</published>
-    <updated>2020-03-05T04:20:33.677Z</updated>
-    
-    <summary type="html">
-    
-      
-      
-        
-        
-          &lt;script&gt;
-        document.querySelectorAll(&#39;.github-emoji&#39;)
-          .forEach(el =&gt; {
-            if (!el.dataset.src) { return; }
-       
-        
-      
-    
-    </summary>
-    
-    
-    
-  </entry>
-  
-  <entry>
-    <title>Hello World</title>
-    <link href="https://github.com/littlematch59/littlematch59.github.io/2020/03/05/hello-world/"/>
-    <id>https://github.com/littlematch59/littlematch59.github.io/2020/03/05/hello-world/</id>
-    <published>2020-03-05T03:07:22.188Z</published>
-    <updated>2020-03-05T03:07:22.188Z</updated>
-    
-    <summary type="html">
-    
-      
-      
-        
-        
-          &lt;p&gt;Welcome to &lt;a href=&quot;https://hexo.io/&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Hexo&lt;/a&gt;! This is your very first post. Check &lt;a
-        
-      
-    
-    </summary>
-    
-    
     
   </entry>
   
