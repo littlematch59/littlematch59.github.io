@@ -4,6 +4,33 @@
   
     
     <entry>
+      <title>Kali linux下docker与docker-compose的安装及两者差异</title>
+      <link href="/2020/03/27/kali-docker/"/>
+      <url>/2020/03/27/kali-docker/</url>
+      
+        <content type="html"><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近接了一个漏洞环境搭建的活，需要用到docker和docker-compose。因为物理机是Win10的，安装docker需要开启Hyper-V，但是Hyper-V和Vmware冲突。所以就在kali虚拟机里面搭了docker。下面记录一下搭建过程。</p><h2 id="安装docker："><a href="#安装docker：" class="headerlink" title="安装docker："></a>安装docker：</h2><pre><code>step1.apt-get updateapt-get install -y apt-transport-https ca-certificatesapt-get install dirmngrstep2.apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609Dstep3.echo 'deb https://apt.dockerproject.org/repo debian-stretch main' &gt; /etc/apt/sources.list.d/docker.liststep4.apt-get updatess-local -c /etc/shadowsocks.json (起飞机)proxychains4 apt-get install docker-engine 代理下载</code></pre><p><img src="https://img-blog.csdnimg.cn/20200327005202102.jpg" alt="docker 搭建成功"></p><h2 id="安装docker-compose"><a href="#安装docker-compose" class="headerlink" title="安装docker-compose"></a>安装docker-compose</h2><pre><code>ss-local -c /etc/shadowsocks.jsonproxychains4 curl -L https://github.com/docker/compose/releases/download/1.25.0-rc1/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose</code></pre><h2 id="docker和docker-compose的对比"><a href="#docker和docker-compose的对比" class="headerlink" title="docker和docker-compose的对比"></a>docker和docker-compose的对比</h2><p><strong>介绍</strong></p><blockquote><p>docker是一个供开发和运维人员开发，测试，部署和运行应用的容器平台。<br>compose是一个用于运行和管理多个容器化应用的工具。</p></blockquote><p><strong>对比</strong></p><ul><li>docker是自动化构建镜像，并启动镜像。 docker compose是自动化编排容器。</li><li>docker是基于Dockerfile得到images,启动的时候是一个单独的container</li><li>docker-compose是基于docker-compose.yml,通常启动的时候是一个服务，这个服务通常由多个container共同组成，并且端口，配置等由docker-compose定义好。</li><li>两者都需要安装，但是要使用docker-compose，必须已经安装docker</li></ul><p>参考博客：<br><a href="https://blog.51cto.com/11834557/2309885" target="_blank" rel="noopener">Linux下docker安装</a><br><a href="https://blog.csdn.net/hero_hope/article/details/91168836" target="_blank" rel="noopener">Linux下docker-compose安装</a><br><a href="https://www.jianshu.com/p/5794ec7e603b" target="_blank" rel="noopener">docker与docker-compose介绍，对比与使用</a></p><script>        document.querySelectorAll('.github-emoji')          .forEach(el => {            if (!el.dataset.src) { return; }            const img = document.createElement('img');            img.style = 'display:none !important;';            img.src = el.dataset.src;            img.addEventListener('error', () => {              img.remove();              el.style.color = 'inherit';              el.style.backgroundImage = 'none';              el.style.background = 'none';            });            img.addEventListener('load', () => {              img.remove();            });            document.body.appendChild(img);          });      </script>]]></content>
+      
+      
+      <categories>
+          
+          <category> Linux </category>
+          
+          <category> docker </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 运维 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>one_gadget用法|攻防世界pwn进阶区babystack</title>
       <link href="/2020/03/25/babystack/"/>
       <url>/2020/03/25/babystack/</url>
