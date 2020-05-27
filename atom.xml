@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://github.com/littlematch59/littlematch59.github.io/"/>
-  <updated>2020-05-25T06:24:40.423Z</updated>
+  <updated>2020-05-27T15:21:43.734Z</updated>
   <id>https://github.com/littlematch59/littlematch59.github.io/</id>
   
   <author>
@@ -15,6 +15,52 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Linux pwn|Canary</title>
+    <link href="https://github.com/littlematch59/littlematch59.github.io/2020/05/27/canary/"/>
+    <id>https://github.com/littlematch59/littlematch59.github.io/2020/05/27/canary/</id>
+    <published>2020-05-27T15:20:31.704Z</published>
+    <updated>2020-05-27T15:21:43.734Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;h2 id=&quot;介绍&quot;&gt;&lt;a href=&quot;#介绍&quot; class=&quot;headerlink&quot; title=&quot;介绍&quot;&gt;&lt;/a&gt;介绍&lt;/h2&gt;&lt;p&gt;Canary
+        
+      
+    
+    </summary>
+    
+    
+      <category term="pwn" scheme="https://github.com/littlematch59/littlematch59.github.io/categories/pwn/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>在pwn路上(1)</title>
+    <link href="https://github.com/littlematch59/littlematch59.github.io/2020/05/27/what-is-pwn/"/>
+    <id>https://github.com/littlematch59/littlematch59.github.io/2020/05/27/what-is-pwn/</id>
+    <published>2020-05-27T14:14:28.532Z</published>
+    <updated>2020-05-27T15:30:43.136Z</updated>
+    
+    <summary type="html">
+    
+      Here&#39;s something encrypted, password is required to continue reading.
+    
+    </summary>
+    
+    
+      <category term="感悟" scheme="https://github.com/littlematch59/littlematch59.github.io/categories/%E6%84%9F%E6%82%9F/"/>
+    
+      <category term="pwn" scheme="https://github.com/littlematch59/littlematch59.github.io/categories/%E6%84%9F%E6%82%9F/pwn/"/>
+    
+    
+  </entry>
   
   <entry>
     <title>DAG consensus</title>
